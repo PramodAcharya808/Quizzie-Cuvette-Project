@@ -4,7 +4,12 @@ import cookieParser from "cookie-parser";
 export const app = express();
 
 // SERVER CONFIGURATION
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.REACT_FRONTEND,
+    credentials: true,
+  })
+);
 
 app.use(cookieParser());
 
