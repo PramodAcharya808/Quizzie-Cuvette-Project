@@ -1,5 +1,5 @@
 import { User } from "../models/user.model.js";
-import { ErrorHandler } from "../utils/ErrorHandler.js";
+import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
@@ -7,21 +7,21 @@ import jwt from "jsonwebtoken";
 // used to generate unique tokens for user
 const generateAccessTokenandRefreshToken = async (userId) => {
   try {
-    const user = User.findById(userId);
+    const user = await User.findById(userId);
     if (!user) {
-      throw new ErrorHandler(404, "User not found");
+      throw new ApiResponse(404, "User not found");
     }
+
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
+
+    console.log(accessToken, refreshToken);
 
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ErrorHandler(
-      500,
-      "Error while creating Access and Refresh tokens"
-    );
+    return new ApiError(500, "Error while creating Access and Refresh tokens");
   }
 };
 
@@ -30,19 +30,33 @@ const userSignup = async (req, res) => {
     const { name, email, password, confirmPassword } = req.body;
     if (
       [name, email, password, confirmPassword].some((fields) => {
-        fields?.trim() === "";
+        return fields?.trim() === "";
       })
     ) {
-      throw new ErrorHandler(400, "All fields are required");
+      throw new ApiResponse(400, "All fields are required");
+    }
+
+    if (password.length < 6) {
+      throw new ApiResponse(
+        400,
+        "Password should be at least 6 characters long"
+      );
+    }
+
+    if (password.length > 24) {
+      throw new ApiResponse(
+        400,
+        "Password should not be more than 24 characters long"
+      );
     }
 
     if (password !== confirmPassword) {
-      throw new ErrorHandler(400, "Passwords do not match");
+      throw new ApiResponse(400, "Passwords do not match");
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      throw new ErrorHandler(400, "Email already in use");
+      throw new ApiResponse(400, "Email already in use");
     }
 
     const userObject = await User.create({
@@ -54,43 +68,45 @@ const userSignup = async (req, res) => {
     const userCreate = await User.findById(userObject._id).select(
       "-password -refreshToken"
     );
+    // console.log(userCreate);
 
     if (!userCreate) {
-      throw new ErrorHandler(500, "Error while creating user");
+      throw new ApiResponse(500, "Error while creating user");
     }
 
     return res
       .status(201)
       .json(new ApiResponse(200, "User created successfully", userCreate));
   } catch (error) {
-    throw new ErrorHandler(500, "Error while creating user", error);
+    return res.json(new ApiError(500, "Error while creating user", error));
   }
 };
 
 const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (
       [email, password].some((fields) => {
-        fields?.trim() === "";
+        return fields?.trim() === "";
       })
     ) {
-      throw new ErrorHandler(400, "All fields are required");
+      throw new ApiResponse(400, "All fields are required");
     }
 
-    const user = await User.findOne(email);
+    const user = await User.findOne({ email });
+
     if (!user) {
-      throw new ErrorHandler(404, "User not found");
+      throw new ApiResponse(404, "User not found");
     }
 
     const passCheck = await user.isPasswordCorrect(password);
     if (!passCheck) {
-      throw new ErrorHandler(401, "Incorrect password");
+      throw new ApiResponse(401, "Incorrect password");
     }
 
-    const { accessToken, refreshToken } = generateAccessTokenandRefreshToken(
-      user._id
-    );
+    const { accessToken, refreshToken } =
+      await generateAccessTokenandRefreshToken(user._id);
 
     const option = {
       httpOnly: true,
@@ -112,7 +128,7 @@ const userLogin = async (req, res) => {
         })
       );
   } catch (error) {
-    throw new ErrorHandler(500, "Error logging in", error);
+    return res.json(new ApiError(500, "Error logging in", error));
   }
 };
 
@@ -135,7 +151,7 @@ const userLogout = async (req, res) => {
       .clearCookie("refreshToken", option)
       .json(new ApiResponse(200, "User logged out successfully"));
   } catch (error) {
-    throw new ErrorHandler(500, "Error logging out", error);
+    return res.json(new ApiError(500, "Error logging out", error));
   }
 };
 
@@ -144,7 +160,7 @@ const refreshAccessToken = async (req, res) => {
     const incomingRefreshToken =
       req.cookie.refreshToken || req.body.refreshToken;
     if (!incomingRefreshToken) {
-      throw new ErrorHandler(401, "Please Login First");
+      throw new ApiResponse(401, "Please login first");
     }
 
     try {
@@ -155,7 +171,7 @@ const refreshAccessToken = async (req, res) => {
 
       const user = await User.findById(decodedRefreshToken._id);
       if (!user) {
-        throw new ErrorHandler(404, "User not found");
+        throw new ApiResponse(404, "User not found");
       }
 
       const { accessToken, refreshToken } = generateAccessTokenandRefreshToken(
@@ -172,10 +188,10 @@ const refreshAccessToken = async (req, res) => {
         .cookie("refreshToken", refreshToken, option)
         .json(new ApiResponse(200, "Access token refreshed successfully"));
     } catch (error) {
-      throw new ErrorHandler(500, "Invalid refresh token", error);
+      return res.json(new ApiError(500, "Invalid refresh token", error));
     }
   } catch (error) {
-    throw new ErrorHandler(500, "Error refreshing Refresh Token", error);
+    return res.json(new ApiError(500, "Error refreshing Refresh Token", error));
   }
 };
 
@@ -185,11 +201,11 @@ const currentUser = async (req, res) => {
       "-password -refreshToken"
     );
     if (!user) {
-      throw new ErrorHandler(404, "User not found");
+      throw new ApiResponse(404, "User not found");
     }
-    return res.json(new ApiResponse(200, "Current user", user));
+    return res.json(new ApiResponse(200, "Current Loggedin user", user));
   } catch (error) {
-    throw new ErrorHandler(500, "Please login first");
+    return res.json(new ApiError(500, "Please login first"));
   }
 };
 
