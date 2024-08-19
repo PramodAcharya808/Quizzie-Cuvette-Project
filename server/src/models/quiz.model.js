@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const quizSchema = new mongoose.Schema(
   {
-    quizname: {
+    quizName: {
       type: String,
       required: [true, "Quiz name required"],
     },
-    quiztype: {
+    quizType: {
       type: String,
       required: true,
     },
