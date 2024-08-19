@@ -5,6 +5,7 @@ const questionSchema = new mongoose.Schema(
     quizId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Quiz",
+      required: true,
     },
     questionText: {
       type: String,
