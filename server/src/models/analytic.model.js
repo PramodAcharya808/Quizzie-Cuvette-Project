@@ -7,7 +7,7 @@ const analyticSchema = new mongoose.Schema(
       ref: "Quiz",
     },
   },
-  { timeseries: true }
+  { timestamps: true }
 );
 
 export const Analytic = mongoose.model("Analytic", analyticSchema);

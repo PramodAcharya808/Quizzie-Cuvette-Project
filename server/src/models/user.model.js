@@ -25,6 +25,9 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       maxlength: 24,
     },
+    refreshToken: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -34,15 +37,15 @@ const userSchema = new mongoose.Schema(
 // hashes password if its modified ONLY
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
-    this.password = bcrypt.hash(this.password, 10);
+    this.password = await bcrypt.hash(this.password, 10);
     next();
   }
 
   return next();
 });
 
-userSchema.methods.isPasswordCorrect = function (passwword) {
-  return bcrypt.compare(passwword, this.password);
+userSchema.methods.isPasswordCorrect = function (password) {
+  return bcrypt.compare(password, this.password);
 };
 
 userSchema.methods.generateAccessToken = function () {

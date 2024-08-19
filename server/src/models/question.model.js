@@ -11,7 +11,7 @@ const questionSchema = new mongoose.Schema(
       type: String,
       required: [true, "Question required"],
     },
-    questionType: {
+    optionType: {
       type: String,
       required: true,
     },
