@@ -21,6 +21,7 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
 // API ROUTES
 const apiVersion = process.env.API_VERSION;
+import userRouter from "./routes/user.route.js";
 
 // API check endpoints
 app.get(`${apiVersion}/check/api`, (req, res) => {
@@ -37,3 +38,7 @@ if (process.env.ENVIRONMENT === "development") {
     });
   });
 }
+
+// USER ROUTES
+
+app.use(`${apiVersion}/user`, userRouter);
