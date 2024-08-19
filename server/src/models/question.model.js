@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { OPT1, OPT2, OPT3, T1, T2, T3, QNA } from "../constants.js";
 
 const questionSchema = new mongoose.Schema(
   {
@@ -13,11 +14,22 @@ const questionSchema = new mongoose.Schema(
     },
     optionType: {
       type: String,
+      default: OPT1,
+      enum: [OPT1, OPT2, OPT3],
       required: true,
     },
+    options: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Option",
+      },
+    ],
     timer: {
       type: Number,
-      default: 0,
+      enum: [T1, T2, T3],
+      required: function () {
+        return this.quizType === QNA;
+      },
     },
   },
   { timestamps: true }

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { QNA, POLL } from "../constants.js";
 
 const quizSchema = new mongoose.Schema(
   {
@@ -9,16 +10,25 @@ const quizSchema = new mongoose.Schema(
     quizType: {
       type: String,
       required: true,
+      enum: [QNA, POLL],
+      default: QNA,
     },
     creatorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    questions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Question",
+        required: true,
+      },
+    ],
     impressions: {
       type: Number,
       default: 0,
     },
-    publicLink: {
+    quizLink: {
       type: String,
       unique: true,
     },

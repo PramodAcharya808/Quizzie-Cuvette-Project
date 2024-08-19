@@ -11,6 +11,9 @@ const optionSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    imageURL: {
+      type: String,
+    },
     isCorrect: {
       type: Boolean,
       default: false,
