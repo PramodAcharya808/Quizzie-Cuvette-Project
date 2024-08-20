@@ -79,6 +79,74 @@ const createQuiz = async (req, res) => {
   }
 };
 
+const updateQuiz = async (req, res) => {
+  try {
+    const { questionText, options, timer } = req.body;
+    const { quizId, questionId } = req.params;
+    const userId = req.user._id;
+
+    // Validate User
+    const userIsQuizCreator = await Quiz.exists({
+      _id: quizId,
+      creatorId: userId,
+    });
+    if (!userIsQuizCreator) {
+      throw new ApiResponse(403, "Your not authorized to edit this quiz");
+    }
+
+    const quizExists = await Quiz.exists({ _id: quizId });
+    if (!quizExists) {
+      throw new ApiResponse(404, "Quiz not found");
+    }
+
+    if (timer !== 0 && timer !== 5 && timer !== 10) {
+      throw new ApiResponse(
+        400,
+        "Invalid timer value. Timer should be either 0, 5, or 10 seconds"
+      );
+    }
+
+    // Validate Question ID
+    const questionExists = await Question.exists({
+      _id: questionId,
+      quizId: quizId,
+    });
+    if (!questionExists) {
+      throw new ApiResponse(404, "Question not found in the specified quiz");
+    }
+
+    if (questionText || timer !== undefined) {
+      await Question.findByIdAndUpdate(questionId, {
+        ...(questionText && { questionText }),
+        ...(timer !== undefined && { timer }),
+      });
+    }
+
+    if (options && options.length) {
+      options.forEach(async (option) => {
+        await Option.findByIdAndUpdate(option.optionId, {
+          ...(option.optionText && { optionText: option.optionText }),
+        });
+      });
+    }
+
+    const quizObject = await Quiz.findById(quizId).populate({
+      path: "questions",
+      model: "Question",
+      populate: {
+        path: "options",
+        model: "Option",
+      },
+    });
+
+    return res.json(
+      new ApiResponse(200, "Quiz Updated Successfully", quizObject)
+    );
+  } catch (error) {
+    return res.json(new ApiError(500, "Error updating quiz", error));
+  }
+};
+
 const getQuizData = async (req, res) => {
   try {
     const { quizId } = req.params;
@@ -154,4 +222,4 @@ const deleteQuiz = async (req, res) => {
   }
 };
 
-export { createQuiz, deleteQuiz, getQuizData };
+export { createQuiz, deleteQuiz, getQuizData, updateQuiz };
