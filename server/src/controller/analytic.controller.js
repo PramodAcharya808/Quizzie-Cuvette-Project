@@ -121,9 +121,23 @@ const trendingQuiz = async (req, res) => {
   }
 };
 
+const totalQuiz = async (req, res) => {
+  try {
+    const userQuizes = req.user.quizes;
+    console.log(userQuizes.length);
+
+    return res.json(new ApiResponse(200, "Total Quiz", userQuizes.length));
+  } catch (error) {
+    return res.json(
+      new ApiError(500, "Error while fetching total quiz", error)
+    );
+  }
+};
+
 export {
   quizImpressionIncrease,
   totalImpressions,
   totalQuestions,
   trendingQuiz,
+  totalQuiz,
 };

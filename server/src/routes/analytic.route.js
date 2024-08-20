@@ -4,6 +4,7 @@ import {
   totalImpressions,
   totalQuestions,
   trendingQuiz,
+  totalQuiz,
 } from "../controller/analytic.controller.js";
 import { JWTverify } from "../middleware/auth.middleware.js";
 
@@ -16,5 +17,6 @@ analyticRouter
 analyticRouter.route("/totalimpressions").get(JWTverify, totalImpressions);
 analyticRouter.route("/totalquestions").get(JWTverify, totalQuestions);
 analyticRouter.route("/trendingquiz").get(JWTverify, trendingQuiz);
+analyticRouter.route("/totalquiz").get(JWTverify, totalQuiz);
 
 export default analyticRouter;

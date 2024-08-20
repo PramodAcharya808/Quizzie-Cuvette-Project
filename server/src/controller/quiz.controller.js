@@ -183,6 +183,31 @@ const getQuizData = async (req, res) => {
   }
 };
 
+const getQuizLink = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { quizId } = req.params;
+
+    const quiz = await Quiz.findById(quizId);
+    console.log(quiz);
+
+    if (!quiz) {
+      throw new ApiResponse(404, "Quiz not found");
+    }
+    if (quiz.creatorId.toString() !== userId.toString()) {
+      throw new ApiResponse(
+        403,
+        "You are not authorized to get this quiz link"
+      );
+    }
+    return res.json(
+      new ApiResponse(200, "Quiz Link Fetched Successfully", quiz.quizLink)
+    );
+  } catch (error) {
+    return res.json(new ApiError(500, "Error fetching quiz link", error));
+  }
+};
+
 const deleteQuiz = async (req, res) => {
   try {
     const { quizId } = req.params;
@@ -223,4 +248,4 @@ const deleteQuiz = async (req, res) => {
   }
 };
 
-export { createQuiz, deleteQuiz, getQuizData, updateQuiz };
+export { createQuiz, deleteQuiz, getQuizData, updateQuiz, getQuizLink };

@@ -4,6 +4,7 @@ import {
   deleteQuiz,
   getQuizData,
   updateQuiz,
+  getQuizLink,
 } from "../controller/quiz.controller.js";
 import { JWTverify } from "../middleware/auth.middleware.js";
 
@@ -15,5 +16,7 @@ quizRouter.route("/view/:quizId").get(JWTverify, getQuizData);
 quizRouter
   .route("/update/:quizId/question/:questionId")
   .patch(JWTverify, updateQuiz);
+
+quizRouter.route("/getquizlink/:quizId").get(JWTverify, getQuizLink);
 
 export default quizRouter;
