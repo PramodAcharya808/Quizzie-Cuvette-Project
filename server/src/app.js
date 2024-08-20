@@ -23,6 +23,7 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 const apiVersion = process.env.API_VERSION;
 import userRouter from "./routes/user.route.js";
 import quizRouter from "./routes/quiz.route.js";
+import analyticRouter from "./routes/analytic.route.js";
 
 // API check endpoints
 app.get(`${apiVersion}/check/api`, (req, res) => {
@@ -45,3 +46,6 @@ app.use(`${apiVersion}/user`, userRouter);
 
 // QUIZ ROUTES
 app.use(`${apiVersion}/quiz`, quizRouter);
+
+// ANALYTIC ROUTES
+app.use(`${apiVersion}/analytics`, analyticRouter);

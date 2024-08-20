@@ -167,13 +167,14 @@ const getQuizData = async (req, res) => {
         },
       });
 
+    if (!quizObject) {
+      throw new ApiResponse(404, "Quiz not found");
+    }
+
     if (quizObject.creatorId._id.toString() !== userId.toString()) {
       throw new ApiResponse(403, "You are not authorized to view this quiz");
     }
 
-    if (!quizObject) {
-      throw new ApiResponse(404, "Quiz not found");
-    }
     return res.json(
       new ApiResponse(200, "Quiz Data Fetched Successfully", quizObject)
     );
