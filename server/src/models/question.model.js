@@ -30,6 +30,7 @@ const questionSchema = new mongoose.Schema(
       required: function () {
         return this.quizType === QNA;
       },
+      default: T1,
     },
   },
   { timestamps: true }

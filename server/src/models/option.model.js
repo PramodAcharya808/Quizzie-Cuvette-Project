@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { QNA } from "../constants.js";
 
 const optionSchema = new mongoose.Schema(
   {
@@ -17,7 +18,9 @@ const optionSchema = new mongoose.Schema(
     isCorrect: {
       type: Boolean,
       default: false,
-      required: true,
+      required: function () {
+        return this.quizType === QNA;
+      },
     },
   },
   { timestamps: true }

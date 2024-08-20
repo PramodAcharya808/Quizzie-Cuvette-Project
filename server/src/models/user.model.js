@@ -25,6 +25,12 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       maxlength: 24,
     },
+    quizes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Quiz",
+      },
+    ],
     refreshToken: {
       type: String,
     },
