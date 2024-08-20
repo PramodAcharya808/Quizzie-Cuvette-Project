@@ -79,6 +79,41 @@ const createQuiz = async (req, res) => {
   }
 };
 
+const getQuizData = async (req, res) => {
+  try {
+    const { quizId } = req.params;
+    const userId = req.user._id;
+
+    const quizObject = await Quiz.findById(quizId)
+      .populate({
+        path: "creatorId",
+        model: "User",
+        select: "_id name email",
+      })
+      .populate({
+        path: "questions",
+        model: "Question",
+        populate: {
+          path: "options",
+          model: "Option",
+        },
+      });
+
+    if (quizObject.creatorId._id.toString() !== userId.toString()) {
+      throw new ApiResponse(403, "You are not authorized to view this quiz");
+    }
+
+    if (!quizObject) {
+      throw new ApiResponse(404, "Quiz not found");
+    }
+    return res.json(
+      new ApiResponse(200, "Quiz Data Fetched Successfully", quizObject)
+    );
+  } catch (error) {
+    return res.json(new ApiError(500, "Error while fetching data", error));
+  }
+};
+
 const deleteQuiz = async (req, res) => {
   try {
     const { quizId } = req.params;
@@ -118,4 +153,5 @@ const deleteQuiz = async (req, res) => {
     return res.json(new ApiError(500, "Error deleting quiz", error));
   }
 };
-export { createQuiz, deleteQuiz };
+
+export { createQuiz, deleteQuiz, getQuizData };
