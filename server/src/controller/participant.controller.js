@@ -8,7 +8,7 @@ import { Option } from "./../models/option.model.js";
 const getQuizData = async (req, res) => {
   try {
     const { quizLink } = req.params;
-    console.log(quizLink);
+    // console.log(quizLink);
     const quizObject = await Quiz.findOne({ quizLink })
       .populate({
         path: "questions",
