@@ -39,6 +39,12 @@ const getResponse = async (req, res) => {
   try {
     let isCorrect = false; // Default to false if selectedOptionId is not provided
 
+    // Find the question based on questionId
+    const question = await Question.findById(questionId);
+    if (!question) {
+      throw new ApiResponse(404, "Question not found");
+    }
+
     if (selectedOptionId) {
       const option = await Option.findById(selectedOptionId);
 
@@ -56,7 +62,7 @@ const getResponse = async (req, res) => {
         quizId,
         sessionId,
         answers: [],
-        score: { totalCorrect: 0, totalQuestions: 0 },
+        score: { totalCorrect: 0, totalQuestions: 0, totalWrong: 0 },
       });
     }
 
@@ -64,7 +70,7 @@ const getResponse = async (req, res) => {
     if (
       response.answers.some((answer) => answer.questionId.equals(questionId))
     ) {
-      return res.status(400).json({ message: "Question already answered" });
+      throw new ApiResponse(400, "Question already answered");
     }
 
     // Add the new answer
@@ -79,16 +85,18 @@ const getResponse = async (req, res) => {
     if (isCorrect) {
       response.score.totalCorrect += 1;
     }
+    if (!isCorrect) {
+      response.score.totalWrong += 1;
+    }
 
     await response.save();
 
-    return res.json({
-      message: "Answer submitted successfully",
-      score: response.score,
-    });
+    return res.json(
+      new ApiResponse(200, "Answer sumbitted successfully", response.score)
+    );
   } catch (error) {
     console.error("Error submitting answer:", error);
-    return res.status(500).json({ message: "Error submitting answer", error });
+    return res.json(new ApiError(500, "Error submitting answer", error));
   }
 };
 

@@ -38,6 +38,10 @@ const responseSchema = new mongoose.Schema(
         type: Number,
         default: 0,
       },
+      totalWrong: {
+        type: Number,
+        default: 0,
+      },
     },
   },
 

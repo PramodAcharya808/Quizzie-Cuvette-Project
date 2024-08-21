@@ -1,10 +1,9 @@
-import { Analytic } from "../models/analytic.model.js";
-import { QuestionAnalytic } from "../models/questionAnalytic.model.js";
-import { Question } from "../models/question.model.js";
-import { User } from "../models/user.model.js";
 import { Quiz } from "../models/quiz.model.js";
+import { Question } from "../models/question.model.js";
+import { Response } from "../models/response.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
+import mongoose from "mongoose";
 
 const quizImpressionIncrease = async (req, res) => {
   try {
@@ -134,10 +133,146 @@ const totalQuiz = async (req, res) => {
   }
 };
 
+const getQuestionWiseAnalytics = async (req, res) => {
+  try {
+    const { quizId } = req.params;
+    console.log(quizId);
+
+    const quiz = await Quiz.findById(quizId).populate({
+      path: "questions",
+      model: "Question",
+    });
+
+    if (!quiz) {
+      throw new ApiResponse(404, "Quiz not found");
+    }
+
+    // Aggregating responses to gather analytics
+    const analytics = await Response.aggregate([
+      { $match: { quizId: new mongoose.Types.ObjectId(quizId) } },
+      { $unwind: "$answers" },
+      {
+        $group: {
+          _id: "$answers.questionId",
+          totalAnswered: { $sum: 1 },
+          totalCorrect: { $sum: { $cond: ["$answers.isCorrect", 1, 0] } },
+          totalWrong: { $sum: { $cond: ["$answers.isCorrect", 0, 1] } },
+        },
+      },
+    ]);
+
+    // Map analytics data back to each question
+    const questionAnalytics = quiz.questions.map((question) => {
+      const analytic = analytics.find((a) => a._id.equals(question._id)) || {
+        totalAnswered: 0,
+        totalCorrect: 0,
+        totalWrong: 0,
+      };
+      return {
+        questionText: question.questionText,
+        totalAnswered: analytic.totalAnswered,
+        totalCorrect: analytic.totalCorrect,
+        totalWrong: analytic.totalWrong,
+      };
+    });
+
+    // Prepare the final response
+    const response = {
+      quizName: quiz.quizName,
+      questions: questionAnalytics,
+      totalImpressions: quiz.impressions,
+      createdAt: quiz.createdAt,
+    };
+
+    return res.json(
+      new ApiResponse(
+        200,
+        "Question-wise analytics fetched successfully",
+        response
+      )
+    );
+  } catch (error) {
+    console.error("Error fetching question-wise analytics:", error);
+    return res.json(
+      new ApiError(500, "Error fetching question-wise analytics", error)
+    );
+  }
+};
+
+const getPollAnalytics = async (req, res) => {
+  try {
+    const { quizId } = req.params;
+
+    const quiz = await Quiz.findById(quizId).populate({
+      path: "questions",
+      model: "Question",
+      populate: {
+        path: "options",
+        model: "Option",
+      },
+    });
+
+    if (!quiz) {
+      throw new ApiResponse(404, "Quiz not found");
+    }
+
+    const analytics = await Response.aggregate([
+      { $match: { quizId: new mongoose.Types.ObjectId(quizId) } },
+      { $unwind: "$answers" },
+      { $unwind: "$answers.selectedOptionId" }, // Assuming each answer can have multiple selectedOptionIds for POLL type
+      {
+        $group: {
+          _id: "$answers.selectedOptionId",
+          totalSelected: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Map analytics data back to each question
+    const questionAnalytics = quiz.questions.map((question) => {
+      const optionsAnalytics = question.options.map((option) => {
+        const analytic = analytics.find((a) => a._id.equals(option._id)) || {
+          totalSelected: 0,
+        };
+        return {
+          optionText: option.optionText,
+          totalSelected: analytic.totalSelected,
+        };
+      });
+
+      return {
+        questionText: question.questionText,
+        options: optionsAnalytics,
+      };
+    });
+
+    // Prepare the final response
+    const response = {
+      quizName: quiz.quizName,
+      questions: questionAnalytics,
+    };
+
+    return res.json(
+      new ApiResponse(
+        200,
+        "Poll question analytics fetched successfully",
+        response
+      )
+    );
+  } catch (error) {
+    console.error("Error fetching poll question analytics:", error);
+    return res.json(
+      new ApiError(500, "Error fetching poll question analytics", error)
+    );
+  }
+};
+
 export {
   quizImpressionIncrease,
   totalImpressions,
   totalQuestions,
   trendingQuiz,
   totalQuiz,
+  getQuestionWiseAnalytics,
+  getPollAnalytics,
 };
