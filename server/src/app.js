@@ -24,6 +24,7 @@ const apiVersion = process.env.API_VERSION;
 import userRouter from "./routes/user.route.js";
 import quizRouter from "./routes/quiz.route.js";
 import analyticRouter from "./routes/analytic.route.js";
+import participantRouter from "./routes/participant.route.js";
 
 // API check endpoints
 app.get(`${apiVersion}/check/api`, (req, res) => {
@@ -49,3 +50,6 @@ app.use(`${apiVersion}/quiz`, quizRouter);
 
 // ANALYTIC ROUTES
 app.use(`${apiVersion}/analytics`, analyticRouter);
+
+// PARTICIPANT ROUTES
+app.use(`${apiVersion}/public`, participantRouter);

@@ -9,7 +9,7 @@ import { User } from "../models/user.model.js";
 
 const quizUuid = () => {
   const uuid = uuidv4();
-  const publicLink = `${process.env.REACT_FRONTEND}/public/quiz/${uuid}`;
+  const publicLink = uuid;
   return { publicLink };
 };
 
@@ -71,9 +71,14 @@ const createQuiz = async (req, res) => {
       $push: { quizes: quizObject._id },
     });
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, "Quiz Created Successfully", publicLink));
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        "Quiz Created Successfully",
+        // publicLink,
+        quizObject
+      )
+    );
   } catch (error) {
     return res.json(new ApiError(500, "Error creating quiz", error));
   }
@@ -183,6 +188,17 @@ const getQuizData = async (req, res) => {
   }
 };
 
+const getAllQuiz = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const quizzes = await Quiz.find({ creatorId: userId });
+
+    return res.json(new ApiResponse(200, "All quiz", quizzes));
+  } catch (error) {
+    return res.json(new ApiError(500, "Error while fetching quizes", error));
+  }
+};
+
 const getQuizLink = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -248,4 +264,11 @@ const deleteQuiz = async (req, res) => {
   }
 };
 
-export { createQuiz, deleteQuiz, getQuizData, updateQuiz, getQuizLink };
+export {
+  createQuiz,
+  deleteQuiz,
+  getQuizData,
+  updateQuiz,
+  getQuizLink,
+  getAllQuiz,
+};
