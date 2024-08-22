@@ -176,7 +176,6 @@ const getQuestionWiseAnalytics = async (req, res) => {
       };
     });
 
-    // Prepare the final response
     const response = {
       quizName: quiz.quizName,
       questions: questionAnalytics,
@@ -219,7 +218,7 @@ const getPollAnalytics = async (req, res) => {
     const analytics = await Response.aggregate([
       { $match: { quizId: new mongoose.Types.ObjectId(quizId) } },
       { $unwind: "$answers" },
-      { $unwind: "$answers.selectedOptionId" }, // Assuming each answer can have multiple selectedOptionIds for POLL type
+      { $unwind: "$answers.selectedOptionId" },
       {
         $group: {
           _id: "$answers.selectedOptionId",
@@ -246,10 +245,11 @@ const getPollAnalytics = async (req, res) => {
       };
     });
 
-    // Prepare the final response
     const response = {
       quizName: quiz.quizName,
       questions: questionAnalytics,
+      totalImpressions: quiz.impressions,
+      createdAt: quiz.createdAt,
     };
 
     return res.json(
