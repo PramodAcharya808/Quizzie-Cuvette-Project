@@ -52,7 +52,7 @@ function SignupForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="signup-form">
         <div className="input-group">
           <div className="input-field">
-            <label className="form-label">Name:</label>
+            <label className="form-label">Name</label>
             <input
               type="text"
               style={{ borderColor: errors.name ? "red" : "" }}
@@ -66,7 +66,7 @@ function SignupForm() {
 
         <div className="input-group">
           <div className="input-field">
-            <label className="form-label">Email:</label>
+            <label className="form-label">Email</label>
             <input
               type="email"
               style={{ borderColor: errors.email ? "red" : "" }}
@@ -80,7 +80,7 @@ function SignupForm() {
 
         <div className="input-group">
           <div className="input-field">
-            <label className="form-label">Password:</label>
+            <label className="form-label">Password</label>
             <input
               type="password"
               style={{ borderColor: errors.password ? "red" : "" }}
@@ -104,7 +104,7 @@ function SignupForm() {
 
         <div className="input-group">
           <div className="input-field">
-            <label className="form-label">Confirm Password:</label>
+            <label className="form-label">Confirm Password</label>
             <input
               type="password"
               style={{ borderColor: errors.confirmPassword ? "red" : "" }}
