@@ -5,10 +5,14 @@ import axios from "axios";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(() => isAuthenticated());
+  const [loading, setLoading] = useState(false);
+
+  const setLoadingState = (state) => {
+    setLoading(state);
+  };
 
   const login = (token) => {
-    console.log(token);
     document.cookie = `accessToken=${token.accessToken}; path=/`;
     document.cookie = `refreshToken=${token.refreshToken}; path=/`;
     setLoggedIn(true);
@@ -28,11 +32,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    setLoggedIn(isAuthenticated());
+    const recheckAuthentication = () => {
+      const isAuthenticatedResult = isAuthenticated();
+      setLoggedIn(isAuthenticatedResult);
+    };
+
+    recheckAuthentication();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ loggedIn, login, logout }}>
+    <AuthContext.Provider
+      value={{ loggedIn, login, logout, loading, setLoadingState }}
+    >
       {children}
     </AuthContext.Provider>
   );

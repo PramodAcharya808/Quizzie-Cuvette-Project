@@ -4,11 +4,11 @@ import Login from "./components/auth/LoginSignup";
 import Dashboard from "./components/dashboard/mainDashboard/Dashboard";
 import { useAuth } from "./context/AuthContext";
 import Analytics from "./components/dashboard/analytics/allAnalytics/Analytics";
+import CreateQuiz from "./components/dashboard/createQuiz/CreateQuiz";
 
 function App() {
   const { loggedIn } = useAuth();
-  console.log(loggedIn);
-
+  console.log("Authenticated: ", loggedIn);
   return (
     <BrowserRouter>
       <Routes>
@@ -24,6 +24,11 @@ function App() {
         <Route
           path="/analytics"
           element={loggedIn ? <Analytics /> : <Navigate to="/" />}
+        />
+
+        <Route
+          path="/createquiz"
+          element={loggedIn ? <CreateQuiz /> : <Navigate to="/" />}
         />
       </Routes>
     </BrowserRouter>

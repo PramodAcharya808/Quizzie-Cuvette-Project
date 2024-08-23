@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
+import Loader from "../loader/Loader";
 
 const LoginSignup = () => {
   const [isActive, setActive] = useState("signup");
@@ -21,6 +22,7 @@ const LoginSignup = () => {
   } = useForm();
 
   const confirmPassword = watch("password");
+  const { login, setLoadingState, loading } = useAuth();
 
   const onSignup = async (data) => {
     try {
@@ -43,15 +45,17 @@ const LoginSignup = () => {
     }
   };
 
-  const { login } = useAuth();
-
   const onLogin = async (data) => {
     try {
+      setLoadingState(true);
       const response = await axios.post("/api/user/login", {
         email: data.email,
         password: data.password,
       });
       console.log(response.data.data.accessToken);
+      console.log(response);
+
+      setLoadingState(false);
 
       if (response.data.status === 200) {
         toast.success("Login successful!");
@@ -207,10 +211,11 @@ const LoginSignup = () => {
               draggable
               pauseOnHover
             />
+            {loading && <Loader />}
             <form onSubmit={handleSubmit(onLogin)} className="signup-form">
               <div className="input-group">
                 <div className="input-field">
-                  <label className="form-label">Email:</label>
+                  <label className="form-label">Email</label>
                   <input
                     type="email"
                     style={{ borderColor: errors.email ? "red" : "" }}
@@ -224,7 +229,7 @@ const LoginSignup = () => {
 
               <div className="input-group">
                 <div className="input-field">
-                  <label className="form-label">Password:</label>
+                  <label className="form-label">Password</label>
                   <input
                     type="password"
                     style={{ borderColor: errors.password ? "red" : "" }}
