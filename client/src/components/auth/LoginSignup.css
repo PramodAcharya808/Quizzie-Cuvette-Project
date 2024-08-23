@@ -1,0 +1,55 @@
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inner-container {
+  width: 85%;
+  height: 80%;
+  border-radius: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  font-size: 10rem;
+  line-height: 10rem;
+  font-weight: 400;
+  margin-top: 2.5rem;
+}
+
+.selector {
+  display: flex;
+}
+
+.tab {
+  width: 20.17rem;
+  height: 3.7rem;
+  border-radius: 1rem;
+  font-size: 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn {
+  width: 27.4rem;
+  height: 3.8rem;
+  border-radius: 0.8rem;
+  background: #A9BCFF;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.submit-btn:hover {
+  transform: scale(1.03);
+  transition: all 0.3s ease;
+}
+
+.submit-btn:active {
+  transform: scale(0.99);
+  transition: all 0.3s ease;
+}

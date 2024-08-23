@@ -15,10 +15,17 @@ const generateAccessTokenandRefreshToken = async (userId) => {
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
-    // console.log(accessToken, refreshToken);
-
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
+    // console.log(
+    //   "access token : ",
+    //   accessToken,
+    //   "refresh token : ",
+    //   refreshToken
+    // );
+
+    // console.log("user: ", user.refreshToken);
+
     return { accessToken, refreshToken };
   } catch (error) {
     return new ApiError(500, "Error while creating Access and Refresh tokens");
@@ -76,7 +83,7 @@ const userSignup = async (req, res) => {
 
     return res
       .status(201)
-      .json(new ApiResponse(200, "User created successfully", userCreate));
+      .json(new ApiResponse(201, "User created successfully", userCreate));
   } catch (error) {
     return res.json(new ApiError(500, "Error while creating user", error));
   }
@@ -109,8 +116,8 @@ const userLogin = async (req, res) => {
       await generateAccessTokenandRefreshToken(user._id);
 
     const option = {
-      httpOnly: true,
-      secure: true,
+      httpOnly: false,
+      secure: false,
     };
 
     const loginUserObject = await User.findById(user._id).select(
@@ -140,15 +147,15 @@ const userLogout = async (req, res) => {
       },
     });
 
-    const option = {
-      httpOnly: true,
-      secure: true,
-    };
+    // const option = {
+    //   httpOnly: true,
+    //   secure: true,
+    // };
 
     return res
       .status(200)
-      .clearCookie("accessToken", option)
-      .clearCookie("refreshToken", option)
+      .clearCookie("accessToken", { path: "/" })
+      .clearCookie("refreshToken", { path: "/" })
       .json(new ApiResponse(200, "User logged out successfully"));
   } catch (error) {
     return res.json(new ApiError(500, "Error logging out", error));
@@ -158,40 +165,48 @@ const userLogout = async (req, res) => {
 const refreshAccessToken = async (req, res) => {
   try {
     const incomingRefreshToken =
-      req.cookie.refreshToken || req.body.refreshToken;
+      req.cookies?.refreshToken || req.body.refreshToken;
     if (!incomingRefreshToken) {
       throw new ApiResponse(401, "Please login first");
     }
 
-    try {
-      const decodedRefreshToken = jwt.verify(
-        incomingRefreshToken,
-        process.env.REFRESH_TOKEN_SECRET
-      );
+    const decodedRefreshToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
 
-      const user = await User.findById(decodedRefreshToken._id);
-      if (!user) {
-        throw new ApiResponse(404, "User not found");
-      }
-
-      const { accessToken, refreshToken } = generateAccessTokenandRefreshToken(
-        user._id
-      );
-
-      const option = {
-        httpOnly: true,
-        secure: true,
-      };
-      return res
-        .status(200)
-        .cookie("accessToken", accessToken, option)
-        .cookie("refreshToken", refreshToken, option)
-        .json(new ApiResponse(200, "Access token refreshed successfully"));
-    } catch (error) {
-      return res.json(new ApiError(500, "Invalid refresh token", error));
+    const user = await User.findById(decodedRefreshToken._id);
+    if (!user) {
+      throw new ApiResponse(404, "User not found");
     }
+
+    // console.log("userid: ", user._id);
+
+    const { accessToken, refreshToken } =
+      await generateAccessTokenandRefreshToken(user._id);
+
+    // console.log(accessToken, refreshToken);
+
+    const cookieOptions = {
+      httpOnly: false,
+      secure: false,
+    };
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, {
+        ...cookieOptions,
+        maxAge: 24 * 60 * 1000,
+      }) //  1 days
+      .cookie("refreshToken", refreshToken, {
+        ...cookieOptions,
+        maxAge: 10 * 24 * 60 * 60 * 1000,
+      }) // 10 days
+      .json(new ApiResponse(200, "Access token refreshed successfully"));
   } catch (error) {
-    return res.json(new ApiError(500, "Error refreshing Refresh Token", error));
+    return res
+      .status(error instanceof ApiResponse ? error.statusCode : 500)
+      .json(new ApiError(500, "Error refreshing token", error));
   }
 };
 
@@ -209,4 +224,21 @@ const currentUser = async (req, res) => {
   }
 };
 
-export { userSignup, userLogin, userLogout, refreshAccessToken, currentUser };
+const validateToken = async (req, res) => {
+  const { accessToken } = req.cookies || req.body;
+  try {
+    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    return res.json({ isValid: true });
+  } catch (err) {
+    return res.status(401).json({ isValid: false });
+  }
+};
+
+export {
+  userSignup,
+  userLogin,
+  userLogout,
+  refreshAccessToken,
+  currentUser,
+  validateToken,
+};
