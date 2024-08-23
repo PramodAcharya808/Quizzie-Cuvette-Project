@@ -5,6 +5,7 @@ import Dashboard from "./components/dashboard/mainDashboard/Dashboard";
 import { useAuth } from "./context/AuthContext";
 import Analytics from "./components/dashboard/analytics/allAnalytics/Analytics";
 import CreateQuiz from "./components/dashboard/createQuiz/CreateQuiz";
+import NotFound from "./components/404/NotFound ";
 
 function App() {
   const { loggedIn } = useAuth();
@@ -19,17 +20,11 @@ function App() {
         <Route
           path="/dashboard"
           element={loggedIn ? <Dashboard /> : <Navigate to="/" />}
-        />
-
-        <Route
-          path="/analytics"
-          element={loggedIn ? <Analytics /> : <Navigate to="/" />}
-        />
-
-        <Route
-          path="/createquiz"
-          element={loggedIn ? <CreateQuiz /> : <Navigate to="/" />}
-        />
+        >
+          <Route path="createquiz" element={<CreateQuiz />} />
+          <Route path="analytics" element={<Analytics />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

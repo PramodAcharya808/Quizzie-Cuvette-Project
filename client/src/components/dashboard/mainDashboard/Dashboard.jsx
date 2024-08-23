@@ -3,7 +3,8 @@ import "./Dashboard.css";
 import { useAuth } from "../../../context/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
+import Analytics from "../analytics/allAnalytics/Analytics";
 
 const Dashboard = () => {
   const { logout } = useAuth();
@@ -20,11 +21,11 @@ const Dashboard = () => {
             <div className="options">Dashboard</div>
           </Link>
 
-          <Link to="/analytics">
+          <Link to="analytics">
             <div className="options">Analytics</div>
           </Link>
 
-          <Link to="/createquiz">
+          <Link to="createquiz">
             <div className="options">Create Quiz</div>
           </Link>
         </div>
@@ -35,7 +36,9 @@ const Dashboard = () => {
           </Link>
         </div>
       </div>
-      <div className="right-section bg-primary"></div>
+      <div className="right-section bg-primary">
+        <Outlet />
+      </div>
     </div>
   );
 };
