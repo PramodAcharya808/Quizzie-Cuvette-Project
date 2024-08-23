@@ -16,9 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      // Call the logout API
       await axios.post("http://localhost:8000/api/v1/user/logout");
-      // Clear the authentication state client-side
       document.cookie =
         "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       document.cookie =
