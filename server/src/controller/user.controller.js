@@ -116,8 +116,8 @@ const userLogin = async (req, res) => {
       await generateAccessTokenandRefreshToken(user._id);
 
     const option = {
-      httpOnly: false,
-      secure: false,
+      httpOnly: process.env.ENVIRONMENT === "production" ? true : false,
+      secure: process.env.ENVIRONMENT === "production" ? true : false,
     };
 
     const loginUserObject = await User.findById(user._id).select(
@@ -147,15 +147,15 @@ const userLogout = async (req, res) => {
       },
     });
 
-    // const option = {
-    //   httpOnly: true,
-    //   secure: true,
-    // };
+    const option = {
+      httpOnly: process.env.ENVIRONMENT === "production" ? true : false,
+      secure: process.env.ENVIRONMENT === "production" ? true : false,
+    };
 
     return res
       .status(200)
-      .clearCookie("accessToken", { path: "/" })
-      .clearCookie("refreshToken", { path: "/" })
+      .clearCookie("accessToken", { path: "/" }, option)
+      .clearCookie("refreshToken", { path: "/" }, option)
       .json(new ApiResponse(200, "User logged out successfully"));
   } catch (error) {
     return res.json(new ApiError(500, "Error logging out", error));
@@ -188,8 +188,8 @@ const refreshAccessToken = async (req, res) => {
     // console.log(accessToken, refreshToken);
 
     const cookieOptions = {
-      httpOnly: false,
-      secure: false,
+      httpOnly: process.env.ENVIRONMENT === "production" ? true : false,
+      secure: process.env.ENVIRONMENT === "production" ? true : false,
     };
 
     return res
