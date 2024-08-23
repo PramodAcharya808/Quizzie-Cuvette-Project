@@ -5,13 +5,17 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function SignupForm() {
+function SignupForm({ setActive }) {
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
+
+  const handleToggle = () => {
+    setActive("login");
+  };
 
   const confirmPassword = watch("password");
 
@@ -27,6 +31,7 @@ function SignupForm() {
 
       if (response.status === 201) {
         toast.success("Account created!");
+        handleToggle();
       } else if (response.data.statusCode === 500) {
         toast.warn("Email already exists!");
       }

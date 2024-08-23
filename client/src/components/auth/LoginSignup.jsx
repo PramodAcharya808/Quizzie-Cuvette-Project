@@ -35,7 +35,11 @@ const LoginSignup = () => {
             Log In
           </button>
         </div>
-        {isActive === "signup" ? <SignupForm /> : <LoginForm />}
+        {isActive === "signup" ? (
+          <SignupForm isActive={isActive === "signup"} setActive={setActive} />
+        ) : (
+          <LoginForm />
+        )}
       </div>
     </div>
   );
