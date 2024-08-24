@@ -1,5 +1,4 @@
 .left-section {
-  /* background: #000; */
   width: 15%;
   height: 100%;
   display: flex;
@@ -8,10 +7,6 @@
   align-items: center;
 }
 
-.right-section {
-  width: 85%;
-  height: 100%;
-}
 
 .logo {
   margin: 0;
@@ -55,4 +50,142 @@
 
 .logout-container {
   width: 100%;
+}
+
+
+.right-section {
+  width: 85%;
+  height: 100%;
+}
+
+.right-section-container {
+  height: 100vh;
+}
+
+.top-section {
+
+  height: 45%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4%;
+}
+
+.card-1 {
+  background: #FFFFFF;
+  height: 58%;
+  width: 28%;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+
+.card-2 {
+  background: #FFFFFF;
+  height: 58%;
+  width: 28%;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card-3 {
+  background: #FFFFFF;
+  height: 58%;
+  width: 28%;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card-1 .top-card {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 20%;
+  padding: 2rem 0 0 0;
+}
+
+.card-1 .count {
+  font-size: 4.6vw;
+  font-weight: 600;
+  color: #FF5D01;
+}
+
+.card-1 .count-label {
+  color: #FF5D01;
+  font-size: 2.4vw;
+  font-weight: 600;
+}
+
+.card-1 .card-info {
+  color: #FF5D01;
+  font-size: 2.4vw;
+  font-weight: 600;
+  padding: 0 0 3rem 0;
+}
+
+.card-2 .top-card {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 10%;
+  padding: 2rem 0 0 0;
+}
+
+.card-2 .count {
+  font-size: 4.6vw;
+  font-weight: 600;
+  color: #60B84B;
+}
+
+.card-2 .count-label {
+  color: #60B84B;
+  font-size: 2.2vw;
+  font-weight: 600;
+}
+
+.card-2 .card-info {
+  color: #60B84B;
+  font-size: 2.4vw;
+  font-weight: 600;
+  padding: 0 0 3rem 0;
+}
+
+
+.card-3 .top-card {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 10%;
+  padding: 2rem 0 0 0;
+}
+
+.card-3 .count {
+  font-size: 4.6vw;
+  font-weight: 600;
+  color: #5076FF;
+}
+
+.card-3 .count-label {
+  color: #5076FF;
+  font-size: 2.2vw;
+  font-weight: 600;
+}
+
+.card-3 .card-info {
+  color: #5076FF;
+  font-size: 2.4vw;
+  font-weight: 600;
+  padding: 0 0 3rem 0;
 }
