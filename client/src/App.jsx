@@ -10,6 +10,7 @@ import NotFound from "./components/404/NotFound ";
 function App() {
   const { loggedIn } = useAuth();
   console.log("Authenticated: ", loggedIn);
+
   return (
     <BrowserRouter>
       <Routes>

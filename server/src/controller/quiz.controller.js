@@ -205,7 +205,7 @@ const getQuizLink = async (req, res) => {
     const { quizId } = req.params;
 
     const quiz = await Quiz.findById(quizId);
-    console.log(quiz);
+    // console.log(quiz);
 
     if (!quiz) {
       throw new ApiResponse(404, "Quiz not found");

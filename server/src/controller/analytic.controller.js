@@ -123,7 +123,7 @@ const trendingQuiz = async (req, res) => {
 const totalQuiz = async (req, res) => {
   try {
     const userQuizes = req.user.quizes;
-    console.log(userQuizes.length);
+    // console.log(userQuizes.length);
 
     return res.json(new ApiResponse(200, "Total Quiz", userQuizes.length));
   } catch (error) {
@@ -136,7 +136,7 @@ const totalQuiz = async (req, res) => {
 const getQuestionWiseAnalytics = async (req, res) => {
   try {
     const { quizId } = req.params;
-    console.log(quizId);
+    // console.log(quizId);
 
     const quiz = await Quiz.findById(quizId).populate({
       path: "questions",
