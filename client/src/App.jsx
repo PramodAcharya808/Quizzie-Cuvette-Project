@@ -6,6 +6,7 @@ import { useAuth } from "./context/AuthContext";
 import Analytics from "./components/dashboard/analytics/allAnalytics/Analytics";
 import CreateQuiz from "./components/dashboard/createQuiz/CreateQuiz";
 import NotFound from "./components/404/NotFound ";
+import QuestionAnalytics from "./components/dashboard/analytics/questionWiseAnalytics/QuestionAnalytics";
 
 function App() {
   const { loggedIn } = useAuth();
@@ -22,8 +23,12 @@ function App() {
           path="/dashboard"
           element={loggedIn ? <Dashboard /> : <Navigate to="/" />}
         >
-          <Route path="createquiz" element={<CreateQuiz />} />
           <Route path="analytics" element={<Analytics />} />
+          <Route
+            path="questionanalytics/:quizId"
+            element={<QuestionAnalytics />}
+          />
+          <Route path="createquiz" element={<CreateQuiz />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

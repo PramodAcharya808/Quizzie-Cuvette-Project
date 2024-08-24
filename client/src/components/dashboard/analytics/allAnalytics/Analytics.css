@@ -78,5 +78,6 @@ td a {
 
 .no-quiz-message {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 5%;
+  font-size: 2rem;
 }

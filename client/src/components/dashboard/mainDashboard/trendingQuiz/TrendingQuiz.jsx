@@ -4,12 +4,11 @@ import axios from "axios";
 import { Eye } from "../../../Icons/CustomIcons";
 import QuizCard from "./QuizCard/QuizCard";
 import Loader from "./../../../loader/Loader";
-import { useLoader } from "../../../../context/LoaderContext";
+import { useAuth } from "../../../../context/AuthContext";
 
 const TrendingQuiz = () => {
   const [trendingQuiz, setTrendingQuiz] = useState([]);
-  const { loading } = useLoader();
-
+  const { loading } = useAuth();
   useEffect(() => {
     async function fecthTrending() {
       try {

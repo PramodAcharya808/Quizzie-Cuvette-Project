@@ -33,7 +33,7 @@ function Analytics() {
 
   const onDeleteHandler = async (quizId) => {
     try {
-      const response = await axios.delete(`/api/quiz/delete/${quizId}`);
+      await axios.delete(`/api/quiz/delete/${quizId}`);
       const updatedQuizzes = await axios.get("/api/quiz/getAllQuiz");
       setAllQuizList(updatedQuizzes.data.data);
       toast.success("Quiz deleted successfully");
@@ -98,12 +98,17 @@ function Analytics() {
                     </button>
                   </td>
                   <td className="right-corner">
-                    <Link to="/analysis">Question Wise Analysis</Link>
+                    <Link to={`/dashboard/questionanalytics/${quiz._id}`}>
+                      Question Wise Analysis
+                    </Link>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {allQuizList.length === 0 && (
+            <p className="no-quiz-message">No quizzes to display</p>
+          )}
         </div>
       </div>
     </>
