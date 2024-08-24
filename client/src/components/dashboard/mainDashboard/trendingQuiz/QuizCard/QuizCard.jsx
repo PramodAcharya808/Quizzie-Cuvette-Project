@@ -4,7 +4,7 @@ import "./QuizCard.css";
 import { format, parseISO } from "date-fns";
 
 const QuizCard = ({ trendingQuiz }) => {
-  function formateDate(date) {
+  function formatDate(date) {
     return format(parseISO(date), "dd MMM, yyyy");
   }
 
@@ -20,14 +20,13 @@ const QuizCard = ({ trendingQuiz }) => {
 
   return (
     <div className="quizCardContainer">
-      {trendingQuiz.data ? (
+      {trendingQuiz.data && trendingQuiz.data.length > 0 ? (
         trendingQuiz.data.map((quiz, index) => (
           <div key={index} className="trending-quiz-card">
             <div className="quiz-info">
               <div className="quiz-name-container">
                 <marquee className="quiz-name">{quiz.quizName}</marquee>
               </div>
-
               <div className="quiz-impression-container">
                 <p className="quiz-impression">
                   {formatNumber(quiz.impressions)}
@@ -37,9 +36,8 @@ const QuizCard = ({ trendingQuiz }) => {
                 </p>
               </div>
             </div>
-
             <div className="quiz-date">
-              <p>Created on: {formateDate(quiz.createdAt)}</p>
+              <p>Created on : {formatDate(quiz.createdAt)}</p>
             </div>
           </div>
         ))

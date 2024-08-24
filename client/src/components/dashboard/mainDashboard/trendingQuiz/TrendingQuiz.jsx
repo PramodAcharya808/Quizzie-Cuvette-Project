@@ -3,19 +3,18 @@ import "./TrendingQuiz.css";
 import axios from "axios";
 import { Eye } from "../../../Icons/CustomIcons";
 import QuizCard from "./QuizCard/QuizCard";
-import { useAuth } from "../../../../context/AuthContext";
 import Loader from "./../../../loader/Loader";
+import { useLoader } from "../../../../context/LoaderContext";
 
 const TrendingQuiz = () => {
   const [trendingQuiz, setTrendingQuiz] = useState([]);
-  const { loading, setLoadingState } = useAuth();
+  const { loading } = useLoader();
+
   useEffect(() => {
     async function fecthTrending() {
       try {
-        setLoadingState(true);
         const trendingQuizList = await axios.get("/api/analytics/trendingquiz");
         setTrendingQuiz(trendingQuizList.data);
-        setLoadingState(false);
       } catch (error) {
         console.error("Error fetching trending quizzes:", error);
       }

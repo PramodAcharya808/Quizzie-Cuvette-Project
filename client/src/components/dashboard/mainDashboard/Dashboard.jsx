@@ -3,13 +3,14 @@ import "./Dashboard.css";
 import { useAuth } from "../../../context/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import axios from "axios";
 import TrendingQuiz from "./trendingQuiz/TrendingQuiz";
 import CountUp from "react-countup";
 
 const Dashboard = () => {
   const { logout, loggedIn } = useAuth();
+  const url = useLocation();
 
   const [totalQuiz, setTotalquiz] = useState();
   const [totalQuestions, setTotalquestions] = useState(0);
@@ -24,10 +25,6 @@ const Dashboard = () => {
     }
     return num.toString();
   }
-
-  // if (loggedIn === true) {
-  //   toast.success("Successful");
-  // }
 
   useEffect(() => {
     async function getData() {
@@ -86,51 +83,53 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="right-section bg-primary">
-          <Outlet />
-          {/* below is my main dashboard code */}
-          <div className="right-section-container">
-            <div className="top-section">
-              <div className="card-1">
-                <div className="top-card">
-                  <h1 className="count">
-                    <CountUp end={totalQuiz} duration={2} />
-                  </h1>
-                  <p className="count-label">Quiz</p>
+          {url.pathname === "/dashboard" ? (
+            <div className="right-section-container">
+              <div className="top-section">
+                <div className="card-1">
+                  <div className="top-card">
+                    <h1 className="count">
+                      <CountUp end={totalQuiz} duration={2} />
+                    </h1>
+                    <p className="count-label">Quiz</p>
+                  </div>
+                  <div className="bottom-card">
+                    <p className="card-info">Created</p>
+                  </div>
                 </div>
-                <div className="bottom-card">
-                  <p className="card-info">Created</p>
+                <div className="card-2">
+                  <div className="top-card">
+                    <h1 className="count">
+                      <CountUp end={totalQuestions} duration={2} />
+                    </h1>
+                    <p className="count-label">Questions</p>
+                  </div>
+                  <div className="bottom-card">
+                    <p className="card-info">Created</p>
+                  </div>
+                </div>
+                <div className="card-3">
+                  <div className="top-card">
+                    <h1 className="count">
+                      <CountUp end={totalImpressions} duration={2} />
+                    </h1>
+                    <p className="count-label">Total</p>
+                  </div>
+                  <div className="bottom-card">
+                    <p className="card-info">Impressions</p>
+                  </div>
                 </div>
               </div>
-              <div className="card-2">
-                <div className="top-card">
-                  <h1 className="count">
-                    <CountUp end={totalQuestions} duration={2} />
-                  </h1>
-                  <p className="count-label">Questions</p>
-                </div>
-                <div className="bottom-card">
-                  <p className="card-info">Created</p>
-                </div>
-              </div>
-              <div className="card-3">
-                <div className="top-card">
-                  <h1 className="count">
-                    <CountUp end={totalImpressions} duration={2} />
-                  </h1>
-                  <p className="count-label">Total</p>
-                </div>
-                <div className="bottom-card">
-                  <p className="card-info">Impressions</p>
+              <div className="bottom-section">
+                <h1 className="trending">Trending Quizs</h1>
+                <div className="trending-container">
+                  <TrendingQuiz />
                 </div>
               </div>
             </div>
-            <div className="bottom-section">
-              <h1 className="trending">Trending Quizs</h1>
-              <div className="trending-container">
-                <TrendingQuiz />
-              </div>
-            </div>
-          </div>
+          ) : (
+            <Outlet />
+          )}
         </div>
       </div>
     </>
