@@ -136,12 +136,20 @@ const totalQuiz = async (req, res) => {
 const getQuestionWiseAnalytics = async (req, res) => {
   try {
     const { quizId } = req.params;
+    const userId = req.user._id;
     // console.log(quizId);
+    // console.log(userId);
 
     const quiz = await Quiz.findById(quizId).populate({
       path: "questions",
       model: "Question",
     });
+
+    // console.log(quiz.creatorId);
+
+    if (!quiz || quiz.creatorId.toString() !== userId.toString()) {
+      throw new ApiResponse(403, "Unauthorized to view this quiz");
+    }
 
     if (!quiz) {
       throw new ApiResponse(404, "Quiz not found");
@@ -201,6 +209,7 @@ const getQuestionWiseAnalytics = async (req, res) => {
 const getPollAnalytics = async (req, res) => {
   try {
     const { quizId } = req.params;
+    const userId = req.user._id;
 
     const quiz = await Quiz.findById(quizId).populate({
       path: "questions",
@@ -210,6 +219,10 @@ const getPollAnalytics = async (req, res) => {
         model: "Option",
       },
     });
+
+    if (!quiz || quiz.creatorId.toString() !== userId.toString()) {
+      throw new ApiResponse(403, "Unauthorized to view this quiz");
+    }
 
     if (!quiz) {
       throw new ApiResponse(404, "Quiz not found");

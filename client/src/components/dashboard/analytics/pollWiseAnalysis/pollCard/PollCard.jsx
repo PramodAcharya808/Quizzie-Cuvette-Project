@@ -13,7 +13,7 @@ const PollCard = ({ index, questionText, options }) => {
 
       <div className="question-card-stats">
         {options.map((options, index) => (
-          <div className="p-card">
+          <div className="p-card" key={index}>
             <h2>{options.totalSelected}</h2>
             <p>Option {index + 1}</p>
           </div>

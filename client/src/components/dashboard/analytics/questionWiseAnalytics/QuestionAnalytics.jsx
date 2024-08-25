@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./QuestionAnalytics.css";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import CountUp from "react-countup";
 import { format, parseISO } from "date-fns";
 import QuestionCard from "./questionCard/QuestionCard";
@@ -11,15 +11,10 @@ const QuestionAnalytics = () => {
     totalImpressions: 0,
     createdAt: "",
     quizName: "",
-    questions: [
-      {
-        questionText: "",
-        totalAnswered: 0,
-        totalCorrect: 0,
-        totalWrong: 0,
-      },
-    ],
+    questions: [],
   });
+  const [redirectToDashboard, setRedirectToDashboard] = useState(false);
+  const [show404, setShow404] = useState(false);
   const { quizId } = useParams();
 
   function formatDate(date) {
@@ -29,17 +24,39 @@ const QuestionAnalytics = () => {
 
   useEffect(() => {
     async function getQuestion() {
-      const response = await axios.get(
-        `/api/analytics/getquestionwiseanalytics/${quizId}`
-      );
-      if (response.data.data) {
-        setQuizDetails(response.data.data);
+      try {
+        const response = await axios.get(
+          `/api/analytics/getquestionwiseanalytics/${quizId}`
+        );
+        if (response.status === 200 && response.data.data) {
+          setQuizDetails(response.data.data);
+        } else if (response.status === 403) {
+          setRedirectToDashboard(true);
+        } else if (response.status === 404) {
+          setShow404(true);
+        } else {
+          console.error("Unexpected response structure:", response.data);
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 403) {
+          setRedirectToDashboard(true);
+        } else if (error.response && error.response.status === 404) {
+          setShow404(true);
+        } else {
+          console.error("Error fetching quiz details:", error);
+        }
       }
     }
     getQuestion();
   }, [quizId]);
 
-  // console.log(quizDetails.questions[0].questionText);
+  if (redirectToDashboard) {
+    return <Navigate to="/dashboard" />;
+  }
+
+  if (show404) {
+    return <Navigate to="/404" />;
+  }
 
   return (
     <div className="question-analysis-container">
@@ -61,18 +78,21 @@ const QuestionAnalytics = () => {
       </div>
       <div className="questions-container">
         <div className="question-inner-container">
-          {quizDetails.questions.map((question, index) => (
-            <QuestionCard
-              key={index}
-              index={index + 1}
-              questionText={question.questionText}
-              totalAnswered={question.totalAnswered}
-              totalCorrect={question.totalCorrect}
-              totalWrong={question.totalWrong}
-            />
-          ))}
+          {quizDetails.questions && quizDetails.questions.length > 0 ? (
+            quizDetails.questions.map((question, index) => (
+              <QuestionCard
+                key={index}
+                index={index + 1}
+                questionText={question.questionText}
+                totalAnswered={question.totalAnswered}
+                totalCorrect={question.totalCorrect}
+                totalWrong={question.totalWrong}
+              />
+            ))
+          ) : (
+            <p>No questions available</p>
+          )}
         </div>
-        ;
       </div>
     </div>
   );
