@@ -98,7 +98,13 @@ function Analytics() {
                     </button>
                   </td>
                   <td className="right-corner">
-                    <Link to={`/dashboard/questionanalytics/${quiz._id}`}>
+                    <Link
+                      to={
+                        quiz.quizType === "POLL"
+                          ? `/dashboard/getpollanalytics/${quiz._id}`
+                          : `/dashboard/questionanalytics/${quiz._id}`
+                      }
+                    >
                       Question Wise Analysis
                     </Link>
                   </td>

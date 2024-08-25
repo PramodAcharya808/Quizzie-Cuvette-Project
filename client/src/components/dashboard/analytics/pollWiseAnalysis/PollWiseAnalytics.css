@@ -1,24 +1,23 @@
-.question-inner-container {
+.poll-inner-container {
   height: 100%;
 }
 
-.question-info {
+.poll-info {
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* padding: 2rem 0; */
   width: 85%;
   margin: 5rem auto;
   overflow: hidden;
 }
 
-.quiz-question-name {
+.poll-question-name {
   width: 80%;
 
 }
 
-.quiz-question-name h1 {
+.poll-question-name h1 {
   font-size: 4rem;
   font-weight: 600;
   color: #5076FF;
@@ -26,13 +25,13 @@
 
 }
 
-.quiz-meta-data h2 {
+.poll-meta-data h2 {
   color: #FF5D01;
   font-weight: 600;
   font-size: 1.5rem;
 }
 
-.questions-container {
+.poll-container {
   width: 85%;
   margin: 0 auto;
 }

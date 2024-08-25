@@ -7,6 +7,7 @@ import Analytics from "./components/dashboard/analytics/allAnalytics/Analytics";
 import CreateQuiz from "./components/dashboard/createQuiz/CreateQuiz";
 import NotFound from "./components/404/NotFound ";
 import QuestionAnalytics from "./components/dashboard/analytics/questionWiseAnalytics/QuestionAnalytics";
+import PollWiseAnalytics from "./components/dashboard/analytics/pollWiseAnalysis/PollWiseAnalytics";
 
 function App() {
   const { loggedIn } = useAuth();
@@ -27,6 +28,10 @@ function App() {
           <Route
             path="questionanalytics/:quizId"
             element={<QuestionAnalytics />}
+          />
+          <Route
+            path="getpollanalytics/:quizId"
+            element={<PollWiseAnalytics />}
           />
           <Route path="createquiz" element={<CreateQuiz />} />
         </Route>
