@@ -5,9 +5,31 @@ import { Delete, Edit, Share } from "./../../../Icons/CustomIcons";
 import axios from "axios";
 import { format, parseISO } from "date-fns";
 import { toast, ToastContainer } from "react-toastify";
+import DeleteModal from "../../../modals/deleteModal/DeleteModal";
 
 function Analytics() {
   const [allQuizList, setAllQuizList] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleDeleteClick = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleConfirmDelete = async (quizId) => {
+    try {
+      await axios.delete(`/api/quiz/delete/${quizId}`);
+      const updatedQuizzes = await axios.get("/api/quiz/getAllQuiz");
+      setAllQuizList(updatedQuizzes.data.data);
+      toast.success("Quiz deleted successfully");
+    } catch (error) {
+      console.log(error);
+    }
+    setShowModal(false);
+  };
 
   function formatDate(date) {
     return format(parseISO(date), "dd MMM, yyyy");
@@ -31,16 +53,7 @@ function Analytics() {
     fetchAllQuiz();
   }, []);
 
-  const onDeleteHandler = async (quizId) => {
-    try {
-      await axios.delete(`/api/quiz/delete/${quizId}`);
-      const updatedQuizzes = await axios.get("/api/quiz/getAllQuiz");
-      setAllQuizList(updatedQuizzes.data.data);
-      toast.success("Quiz deleted successfully");
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const onDeleteHandler = async (quizId) => {};
 
   console.log(allQuizList);
 
@@ -89,7 +102,7 @@ function Analytics() {
                     </button>
                     <button
                       className="action-button delete"
-                      onClick={() => onDeleteHandler(quiz._id)}
+                      onClick={() => handleDeleteClick()}
                     >
                       <Delete />
                     </button>
@@ -108,6 +121,12 @@ function Analytics() {
                       Question Wise Analysis
                     </Link>
                   </td>
+                  <DeleteModal
+                    show={showModal}
+                    onClose={handleCloseModal}
+                    onConfirm={handleConfirmDelete}
+                    quizId={quiz._id}
+                  />
                 </tr>
               ))}
             </tbody>
