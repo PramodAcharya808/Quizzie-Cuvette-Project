@@ -7,6 +7,7 @@ import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import axios from "axios";
 import TrendingQuiz from "./trendingQuiz/TrendingQuiz";
 import CountUp from "react-countup";
+import CreateQuizModal from "../../modals/createQuizModal/quizNameType/CreateQuizModal";
 
 const Dashboard = () => {
   const { logout, loggedIn } = useAuth();
@@ -15,6 +16,7 @@ const Dashboard = () => {
   const [totalQuiz, setTotalquiz] = useState();
   const [totalQuestions, setTotalquestions] = useState(0);
   const [totalImpressions, setTotalimpressions] = useState(0);
+  const [show, setShow] = useState(false);
 
   function formatNumber(num) {
     if (num >= 1000000) {
@@ -56,8 +58,8 @@ const Dashboard = () => {
         draggable
         pauseOnHover
       />
-      <div className="container">
-        <div className="left-section box-shadow-3 bg-secondary">
+      <div className="main-container">
+        <div className="left-section  box-shadow-3 bg-secondary">
           <div className="inner-group-1">
             <h1 className="logo secondary-font"> QUIZZIE</h1>
           </div>
@@ -71,9 +73,9 @@ const Dashboard = () => {
               <div className="options">Analytics</div>
             </Link>
 
-            <Link to="createquiz">
-              <div className="options">Create Quiz</div>
-            </Link>
+            <button className="options" onClick={() => setShow(true)}>
+              Create Quiz
+            </button>
           </div>
 
           <div className="logout-container">
@@ -83,6 +85,7 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="right-section bg-primary">
+          <CreateQuizModal show={show} setShow={setShow} />
           {url.pathname === "/dashboard" ? (
             <div className="right-section-container">
               <div className="top-section">

@@ -28,6 +28,7 @@
   align-items: center;
   border-radius: 1rem;
   margin: 0 auto;
+  cursor: pointer;
 }
 
 .inner-group-2 {
@@ -208,4 +209,11 @@
 
 .trending-container {
   margin-top: 4%;
+}
+
+.main-container {
+  background: #000;
+  height: 100vh;
+  z-index: 1003;
+  /* width: 1000px; */
 }

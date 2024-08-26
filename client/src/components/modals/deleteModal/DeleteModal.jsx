@@ -2,10 +2,16 @@ import React from "react";
 import "./DeleteModal.css";
 
 const DeleteModal = ({ show, onClose, onConfirm, quizId }) => {
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   if (!show) return null;
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content">
         <h2>Are you confirm you want to delete ?</h2>
 

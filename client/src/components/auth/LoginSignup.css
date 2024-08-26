@@ -89,7 +89,7 @@
   /* Spacing between label and input */
 }
 
-input[type="text"],
+.input-group input[type="text"],
 input[type="email"],
 input[type="password"] {
   flex: 1;
