@@ -286,6 +286,13 @@ const QuizDetails = ({
                     </div>
                   )
                 )}
+                <button
+                  className="add-option-btn"
+                  onClick={() => handleAddOption(selectedQuestionIndex)}
+                  disabled
+                >
+                  Add option
+                </button>
               </div>
             </div>
           )}
