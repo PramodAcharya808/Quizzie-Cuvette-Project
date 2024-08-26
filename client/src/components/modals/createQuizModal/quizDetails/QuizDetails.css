@@ -3,7 +3,6 @@
 .poll-form {
   background: #FFFFFF;
   border-radius: 1rem;
-  /* text-align: center; */
   max-width: 55%;
   max-height: 90%;
   height: 100%;
@@ -12,6 +11,16 @@
   flex-direction: column;
   box-sizing: border-box;
   padding: 3rem 8rem 3rem 4rem;
+}
+
+.correct-selected {
+  background-color: #60B84B;
+  color: white !important;
+}
+
+.correct-selected::placeholder {
+  color: white !important;
+  ;
 }
 
 .question-tabs {
@@ -273,6 +282,7 @@
   border: none;
   border-radius: 1rem;
   cursor: pointer;
+  color: #474444;
 }
 
 .cancel-btn {

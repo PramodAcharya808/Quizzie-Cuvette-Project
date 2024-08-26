@@ -7,11 +7,11 @@ import Analytics from "./components/dashboard/analytics/allAnalytics/Analytics";
 import NotFound from "./components/404/NotFound ";
 import QuestionAnalytics from "./components/dashboard/analytics/questionWiseAnalytics/QuestionAnalytics";
 import PollWiseAnalytics from "./components/dashboard/analytics/pollWiseAnalysis/PollWiseAnalytics";
+import GameView from "./components/game/GameView";
 
 function App() {
   const { loggedIn } = useAuth();
   console.log("Authenticated: ", loggedIn);
-
   return (
     <BrowserRouter>
       <Routes>
@@ -33,6 +33,7 @@ function App() {
             element={<PollWiseAnalytics />}
           />
         </Route>
+        <Route path="/public/:quizLink" element={<GameView />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

@@ -9,7 +9,7 @@ const quizSchema = new mongoose.Schema(
     },
     quizType: {
       type: String,
-      required: true,
+      required: [true, "Quiz type required"],
       enum: [QNA, POLL],
       default: QNA,
     },

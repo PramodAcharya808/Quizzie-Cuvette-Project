@@ -31,6 +31,16 @@ function Analytics() {
     setShowModal(false);
   };
 
+  const handleShare = (quizLink) => {
+    const quizUrl = `http://localhost:5173/public/${quizLink}`;
+    try {
+      navigator.clipboard.writeText(quizUrl);
+      toast.success("Quiz link copied to clipboard");
+    } catch (error) {
+      toast.error("Error. Cant copy to clipboard");
+    }
+  };
+
   function formatDate(date) {
     return format(parseISO(date), "dd MMM, yyyy");
   }
@@ -53,15 +63,13 @@ function Analytics() {
     fetchAllQuiz();
   }, []);
 
-  // const onDeleteHandler = async (quizId) => {};
-
   console.log(allQuizList);
 
   return (
     <>
       <ToastContainer
         position="top-right"
-        autoClose={4000}
+        autoClose={1000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
@@ -106,7 +114,10 @@ function Analytics() {
                     >
                       <Delete />
                     </button>
-                    <button className="action-button share">
+                    <button
+                      className="action-button share"
+                      onClick={() => handleShare(quiz.quizLink)}
+                    >
                       <Share />
                     </button>
                   </td>

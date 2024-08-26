@@ -40,9 +40,21 @@ export const AuthProvider = ({ children }) => {
     recheckAuthentication();
   }, []);
 
+  const notifyQuizCreated = () => {
+    setQuizCreated(true);
+    setTimeout(() => setQuizCreated(false), 1000);
+  };
+
   return (
     <AuthContext.Provider
-      value={{ loggedIn, login, logout, loading, setLoadingState }}
+      value={{
+        loggedIn,
+        login,
+        logout,
+        loading,
+        setLoadingState,
+        notifyQuizCreated,
+      }}
     >
       {children}
     </AuthContext.Provider>

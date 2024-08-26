@@ -10,7 +10,7 @@ import CountUp from "react-countup";
 import CreateQuizModal from "../../modals/createQuizModal/quizNameType/CreateQuizModal";
 
 const Dashboard = () => {
-  const { logout, loggedIn } = useAuth();
+  const { logout } = useAuth();
   const url = useLocation();
 
   const [totalQuiz, setTotalquiz] = useState();
@@ -49,7 +49,7 @@ const Dashboard = () => {
     <>
       <ToastContainer
         position="top-right"
-        autoClose={4000}
+        autoClose={1000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick

@@ -3,9 +3,10 @@ import "./QuizDetails.css";
 import { toast, ToastContainer } from "react-toastify";
 import { Delete } from "../../../Icons/CustomIcons";
 import axios from "axios";
+import "./PollDetails.css";
 import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
 
-const QuizDetails = ({
+const PollDetails = ({
   setShow,
   setNext,
   resetForm1,
@@ -32,7 +33,6 @@ const QuizDetails = ({
   ]);
   const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
   const [selectedOptionTypes, setSelectedOptionTypes] = useState(["Text"]);
-  const [questionTimers, setQuestionTimers] = useState(["OFF"]);
   const [correctAnswers, setCorrectAnswers] = useState([null]);
   const [created, setCreated] = useState(false);
   const [quizLink, setQuizLink] = useState("");
@@ -51,7 +51,6 @@ const QuizDetails = ({
       ]);
       setCorrectAnswers([...correctAnswers, null]);
       setSelectedOptionTypes([...selectedOptionTypes, "Text"]);
-      setQuestionTimers([...questionTimers, "OFF"]); // Add a new timer for the new question
       setSelectedQuestionIndex(questions.length);
     } else {
       toast.error("You can only add up to 5 questions.");
@@ -64,7 +63,6 @@ const QuizDetails = ({
       setQuestions(updatedQuestions);
       setCorrectAnswers(correctAnswers.filter((_, i) => i !== index));
       setSelectedOptionTypes(selectedOptionTypes.filter((_, i) => i !== index));
-      setQuestionTimers(questionTimers.filter((_, i) => i !== index)); // Remove the timer for the deleted question
       setSelectedQuestionIndex(Math.max(0, selectedQuestionIndex - 1));
     }
   };
@@ -117,12 +115,6 @@ const QuizDetails = ({
     setSelectedOptionTypes(updatedOptionTypes);
   };
 
-  const handleTimerChange = (questionIndex, timerValue) => {
-    const updatedTimers = [...questionTimers];
-    updatedTimers[questionIndex] = timerValue;
-    setQuestionTimers(updatedTimers);
-  };
-
   const validateForm = () => {
     if (!quizInfo.quizName || !quizInfo.quizType) {
       toast.error("Quiz name and type are required.");
@@ -152,10 +144,6 @@ const QuizDetails = ({
           return false;
         }
       }
-      if (correctAnswers[i] === null) {
-        toast.error(`Please select the correct answer for Question ${i + 1}.`);
-        return false;
-      }
     }
 
     return true;
@@ -177,10 +165,6 @@ const QuizDetails = ({
           imageURL: option.imageUrl,
           isCorrect: correctAnswers[index] === optIndex,
         })),
-        timer:
-          questionTimers[index] === "OFF"
-            ? 0
-            : parseInt(questionTimers[index].split(" ")[0], 10),
       })),
     };
 
@@ -188,9 +172,9 @@ const QuizDetails = ({
 
     try {
       const response = await axios.post("/api/quiz/create", quizData);
-      console.log(response.data.data.quizLink);
+      console.log(response);
       setQuizLink(response.data.data.quizLink);
-      toast.success("Quiz created successfully!");
+      toast.success("Poll created successfully!");
       setCreated(true);
     } catch (error) {
       console.log(error);
@@ -248,7 +232,7 @@ const QuizDetails = ({
               <div className="question-header">
                 <input
                   type="text"
-                  placeholder="Q & A Question"
+                  placeholder="Poll Question"
                   className="question-input"
                   value={questions[selectedQuestionIndex].text}
                   onChange={(e) =>
@@ -318,23 +302,10 @@ const QuizDetails = ({
                 </div>
               </div>
 
-              <div className="options-selector">
+              <div className="options-selector option-selector-poll">
                 {questions[selectedQuestionIndex].options.map(
                   (option, optIndex) => (
                     <div key={optIndex} className="option">
-                      <input
-                        type="radio"
-                        name={`correctAnswer${selectedQuestionIndex}`}
-                        checked={
-                          correctAnswers[selectedQuestionIndex] === optIndex
-                        }
-                        onChange={() =>
-                          handleCorrectAnswerChange(
-                            selectedQuestionIndex,
-                            optIndex
-                          )
-                        }
-                      />
                       {selectedOptionTypes[selectedQuestionIndex] ===
                       "Text & Image URL" ? (
                         <>
@@ -342,7 +313,7 @@ const QuizDetails = ({
                             type="text"
                             id="textInput"
                             placeholder="Text"
-                            className={`option-input ${
+                            className={`option-input   ${
                               correctAnswers[selectedQuestionIndex] === optIndex
                                 ? "correct-selected"
                                 : ""
@@ -424,7 +395,7 @@ const QuizDetails = ({
                   )
                 )}
                 <button
-                  className="add-option-btn"
+                  className="add-option-btn option-btn-poll"
                   onClick={() => handleAddOption(selectedQuestionIndex)}
                 >
                   Add option
@@ -446,45 +417,35 @@ const QuizDetails = ({
             </button>
           </div>
 
-          <div className="timer-section">
-            <label>Timer</label>
-            <div className="timer-options">
-              <button
-                className={`timer-btn ${
-                  questionTimers[selectedQuestionIndex] === "OFF"
-                    ? "selected"
-                    : ""
-                }`}
-                onClick={() => handleTimerChange(selectedQuestionIndex, "OFF")}
-              >
-                OFF
-              </button>
-              <button
-                className={`timer-btn ${
-                  questionTimers[selectedQuestionIndex] === "5 sec"
-                    ? "selected"
-                    : ""
-                }`}
-                onClick={() =>
-                  handleTimerChange(selectedQuestionIndex, "5 sec")
-                }
-              >
-                5 sec
-              </button>
-              <button
-                className={`timer-btn ${
-                  questionTimers[selectedQuestionIndex] === "10 sec"
-                    ? "selected"
-                    : ""
-                }`}
-                onClick={() =>
-                  handleTimerChange(selectedQuestionIndex, "10 sec")
-                }
-              >
-                10 sec
-              </button>
-            </div>
+          {/* <div className="timer-section">
+          <label>Timer</label>
+          <div className="timer-options">
+            <button
+              className={`timer-btn ${
+                selectedTimer === "OFF" ? "selected" : ""
+              }`}
+              onClick={() => setSelectedTimer("OFF")}
+            >
+              OFF
+            </button>
+            <button
+              className={`timer-btn ${
+                selectedTimer === "5 sec" ? "selected" : ""
+              }`}
+              onClick={() => setSelectedTimer("5 sec")}
+            >
+              5 sec
+            </button>
+            <button
+              className={`timer-btn ${
+                selectedTimer === "10 sec" ? "selected" : ""
+              }`}
+              onClick={() => setSelectedTimer("10 sec")}
+            >
+              10 sec
+            </button>
           </div>
+        </div> */}
         </div>
       ) : (
         <CopyLinkModal
@@ -501,4 +462,4 @@ const QuizDetails = ({
   );
 };
 
-export default QuizDetails;
+export default PollDetails;
