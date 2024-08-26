@@ -4,7 +4,7 @@ const DB_NAME = "quizcraft";
 const [OPT1, OPT2, OPT3] = ["Text", "Image URL", "Text and Image URL"];
 
 // Options for question timer (seconds)
-const [T1, T2, T3] = [0, 5, 10];
+const [T1, T2, T3] = ["OFF", 5, 10];
 
 // Quiz Types
 const [QNA, POLL] = ["Q&A", "POLL"];

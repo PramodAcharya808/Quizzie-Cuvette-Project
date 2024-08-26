@@ -6,11 +6,13 @@ import axios from "axios";
 import { format, parseISO } from "date-fns";
 import { toast, ToastContainer } from "react-toastify";
 import DeleteModal from "../../../modals/deleteModal/DeleteModal";
+import UpdateQuizModal from "../../../modals/editQuizModal/quizNameType/UpdateQuizModal";
 
 function Analytics() {
   const [allQuizList, setAllQuizList] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [update, setUpdate] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedQuizId, setSelectedQuizId] = useState(null);
 
   const handleDeleteClick = () => {
     setShowModal(true);
@@ -40,6 +42,11 @@ function Analytics() {
     } catch (error) {
       toast.error("Error. Cant copy to clipboard");
     }
+  };
+
+  const handleEditClick = (quizId) => {
+    setSelectedQuizId(quizId);
+    setShowUpdateModal(true);
   };
 
   function formatDate(date) {
@@ -106,7 +113,10 @@ function Analytics() {
                   <td>{formatDate(quiz.createdAt)}</td>
                   <td>{formatNumber(quiz.impressions)}</td>
                   <td>
-                    <button className="action-button edit">
+                    <button
+                      className="action-button edit"
+                      onClick={() => handleEditClick(quiz._id)} // Pass the quiz ID
+                    >
                       <Edit />
                     </button>
                     <button
@@ -148,6 +158,11 @@ function Analytics() {
           )}
         </div>
       </div>
+      <UpdateQuizModal
+        show={showUpdateModal}
+        setShow={setShowUpdateModal}
+        quizId={selectedQuizId} // Pass the selected quiz ID to the modal
+      />
     </>
   );
 }

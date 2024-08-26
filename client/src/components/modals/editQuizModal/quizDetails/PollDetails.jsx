@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./QuizDetails.css";
 import { toast, ToastContainer } from "react-toastify";
-import { Delete } from "../../../Icons/CustomIcons";
 import axios from "axios";
 import "./PollDetails.css";
 import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
@@ -13,6 +12,7 @@ const PollDetails = ({
   quizInfo,
   setQuizInfo,
   setSelectedType,
+  quizId, // Added quizId prop to identify the quiz being edited
 }) => {
   const handleCancel = () => {
     setShow(false);
@@ -22,73 +22,42 @@ const PollDetails = ({
     setSelectedType(null);
   };
 
-  const [questions, setQuestions] = useState([
-    {
-      text: "",
-      options: [
-        { text: "", imageUrl: "" },
-        { text: "", imageUrl: "" },
-      ],
-    },
-  ]);
+  const [questions, setQuestions] = useState([]);
   const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
-  const [selectedOptionTypes, setSelectedOptionTypes] = useState(["Text"]);
-  const [correctAnswers, setCorrectAnswers] = useState([null]);
+  const [selectedOptionTypes, setSelectedOptionTypes] = useState([]);
   const [created, setCreated] = useState(false);
   const [quizLink, setQuizLink] = useState("");
 
-  const handleAddQuestion = () => {
-    if (questions.length < 5) {
-      setQuestions([
-        ...questions,
-        {
-          text: "",
-          options: [
-            { text: "", imageUrl: "" },
-            { text: "", imageUrl: "" },
-          ],
-        },
-      ]);
-      setCorrectAnswers([...correctAnswers, null]);
-      setSelectedOptionTypes([...selectedOptionTypes, "Text"]);
-      setSelectedQuestionIndex(questions.length);
-    } else {
-      toast.error("You can only add up to 5 questions.");
-    }
-  };
+  // Fetching poll data
+  useEffect(() => {
+    async function fetchQuizData() {
+      try {
+        const response = await axios.get(`/api/quiz/view/${quizId}`);
+        const quizData = response.data.data;
 
-  const handleDeleteQuestion = (index) => {
-    if (questions.length > 1) {
-      const updatedQuestions = questions.filter((_, i) => i !== index);
-      setQuestions(updatedQuestions);
-      setCorrectAnswers(correctAnswers.filter((_, i) => i !== index));
-      setSelectedOptionTypes(selectedOptionTypes.filter((_, i) => i !== index));
-      setSelectedQuestionIndex(Math.max(0, selectedQuestionIndex - 1));
-    }
-  };
-
-  const handleAddOption = (questionIndex) => {
-    if (questions[questionIndex].options.length < 4) {
-      const updatedQuestions = [...questions];
-      updatedQuestions[questionIndex].options.push({ text: "", imageUrl: "" });
-      setQuestions(updatedQuestions);
-    } else {
-      toast.error("You can only add up to 4 options.");
-    }
-  };
-
-  const handleDeleteOption = (questionIndex, optionIndex) => {
-    if (questions[questionIndex].options.length > 2) {
-      const updatedQuestions = [...questions];
-      updatedQuestions[questionIndex].options.splice(optionIndex, 1);
-      setQuestions(updatedQuestions);
-      if (correctAnswers[questionIndex] === optionIndex) {
-        const updatedCorrectAnswers = [...correctAnswers];
-        updatedCorrectAnswers[questionIndex] = null;
-        setCorrectAnswers(updatedCorrectAnswers);
+        // Populate state with quiz data
+        setQuestions(
+          quizData.questions.map((question) => ({
+            _id: question._id, // Store question ID
+            text: question.questionText,
+            options: question.options.map((option) => ({
+              _id: option._id, // Store option ID
+              text: option.optionText,
+              imageUrl: option.imageURL,
+            })),
+          }))
+        );
+        setSelectedOptionTypes(
+          quizData.questions.map((question) => question.optionType)
+        );
+      } catch (error) {
+        console.error("Error fetching poll data", error);
+        toast.error("Failed to fetch poll data");
       }
     }
-  };
+
+    fetchQuizData();
+  }, [quizId]);
 
   const handleQuestionChange = (e, index) => {
     const updatedQuestions = [...questions];
@@ -96,89 +65,60 @@ const PollDetails = ({
     setQuestions(updatedQuestions);
   };
 
-  const handleOptionChange = (e, questionIndex, optionIndex, field) => {
+  const handleOptionChange = (e, questionIndex, optionIndex) => {
     const updatedQuestions = [...questions];
-    updatedQuestions[questionIndex].options[optionIndex][field] =
-      e.target.value;
+    updatedQuestions[questionIndex].options[optionIndex].text = e.target.value;
     setQuestions(updatedQuestions);
   };
 
-  const handleCorrectAnswerChange = (questionIndex, optionIndex) => {
-    const updatedCorrectAnswers = [...correctAnswers];
-    updatedCorrectAnswers[questionIndex] = optionIndex;
-    setCorrectAnswers(updatedCorrectAnswers);
-  };
-
-  const handleOptionTypeChange = (questionIndex, optionType) => {
-    const updatedOptionTypes = [...selectedOptionTypes];
-    updatedOptionTypes[questionIndex] = optionType;
-    setSelectedOptionTypes(updatedOptionTypes);
-  };
-
   const validateForm = () => {
-    if (!quizInfo.quizName || !quizInfo.quizType) {
-      toast.error("Quiz name and type are required.");
-      return false;
-    }
-
     for (let i = 0; i < questions.length; i++) {
       if (!questions[i].text) {
         toast.error(`Question ${i + 1} is required.`);
         return false;
       }
       for (let j = 0; j < questions[i].options.length; j++) {
-        if (
-          !questions[i].options[j].text &&
-          selectedOptionTypes[i] !== "Image URL"
-        ) {
+        if (!questions[i].options[j].text) {
           toast.error(`Option ${j + 1} in Question ${i + 1} is required.`);
-          return false;
-        }
-        if (
-          selectedOptionTypes[i] !== "Text" &&
-          !questions[i].options[j].imageUrl
-        ) {
-          toast.error(
-            `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
-          );
           return false;
         }
       }
     }
-
     return true;
   };
 
-  const handleCreateQuiz = async () => {
+  const handleUpdatePoll = async () => {
     if (!validateForm()) {
       return;
     }
 
-    const quizData = {
-      quizName: quizInfo.quizName,
-      quizType: quizInfo.quizType,
-      questions: questions.map((question, index) => ({
+    // Ensure that questionId and optionId are included
+    const updatedQuizData = {
+      questions: questions.map((question) => ({
+        questionId: question._id, // Use the stored question ID
         questionText: question.text,
-        optionType: selectedOptionTypes[index],
-        options: question.options.map((option, optIndex) => ({
+        options: question.options.map((option) => ({
+          optionId: option._id, // Use the stored option ID
           optionText: option.text,
-          imageURL: option.imageUrl,
-          isCorrect: correctAnswers[index] === optIndex,
         })),
       })),
     };
 
-    console.log(quizData);
-
     try {
-      const response = await axios.post("/api/quiz/create", quizData);
-      console.log(response);
+      const response = await axios.patch(
+        `/api/quiz/update/${quizId}`,
+        updatedQuizData
+      );
       setQuizLink(response.data.data.quizLink);
-      toast.success("Poll created successfully!");
+      toast.success("Poll updated successfully!");
       setCreated(true);
     } catch (error) {
-      console.log(error);
-      toast.error("Failed to create quiz. Please try again.");
+      console.error("Error updating poll", error);
+      if (error.response && error.response.data) {
+        toast.error(`Error: ${error.response.data.message}`);
+      } else {
+        toast.error("Failed to update poll. Please try again.");
+      }
     }
   };
 
@@ -211,19 +151,8 @@ const PollDetails = ({
                 >
                   {index + 1}
                 </span>
-                {questions.length > 1 && (
-                  <button
-                    className="delete-question-btn"
-                    onClick={() => handleDeleteQuestion(index)}
-                  >
-                    ×
-                  </button>
-                )}
               </div>
             ))}
-            <button className="add-question-btn" onClick={handleAddQuestion}>
-              +
-            </button>
             <p>Max 5 questions</p>
           </div>
 
@@ -252,12 +181,7 @@ const PollDetails = ({
                     checked={
                       selectedOptionTypes[selectedQuestionIndex] === "Text"
                     }
-                    onChange={(e) =>
-                      handleOptionTypeChange(
-                        selectedQuestionIndex,
-                        e.target.value
-                      )
-                    }
+                    readOnly
                   />
                   <label htmlFor={`text-${selectedQuestionIndex}`}>Text</label>
 
@@ -269,12 +193,7 @@ const PollDetails = ({
                     checked={
                       selectedOptionTypes[selectedQuestionIndex] === "Image URL"
                     }
-                    onChange={(e) =>
-                      handleOptionTypeChange(
-                        selectedQuestionIndex,
-                        e.target.value
-                      )
-                    }
+                    readOnly
                   />
                   <label htmlFor={`image-${selectedQuestionIndex}`}>
                     Image URL
@@ -289,12 +208,7 @@ const PollDetails = ({
                       selectedOptionTypes[selectedQuestionIndex] ===
                       "Text & Image URL"
                     }
-                    onChange={(e) =>
-                      handleOptionTypeChange(
-                        selectedQuestionIndex,
-                        e.target.value
-                      )
-                    }
+                    readOnly
                   />
                   <label htmlFor={`textImage-${selectedQuestionIndex}`}>
                     Text & Image URL
@@ -313,11 +227,7 @@ const PollDetails = ({
                             type="text"
                             id="textInput"
                             placeholder="Text"
-                            className={`option-input   ${
-                              correctAnswers[selectedQuestionIndex] === optIndex
-                                ? "correct-selected"
-                                : ""
-                            }`}
+                            className="option-input"
                             value={option.text}
                             onChange={(e) =>
                               handleOptionChange(
@@ -332,11 +242,7 @@ const PollDetails = ({
                             type="text"
                             placeholder="Image URL"
                             id="imageUrlInput"
-                            className={`option-input ${
-                              correctAnswers[selectedQuestionIndex] === optIndex
-                                ? "correct-selected"
-                                : ""
-                            }`}
+                            className="option-input"
                             value={option.imageUrl}
                             onChange={(e) =>
                               handleOptionChange(
@@ -357,11 +263,7 @@ const PollDetails = ({
                               ? "Image URL"
                               : "Text"
                           }
-                          className={`option-input ${
-                            correctAnswers[selectedQuestionIndex] === optIndex
-                              ? "correct-selected"
-                              : ""
-                          }`}
+                          className="option-input"
                           value={
                             selectedOptionTypes[selectedQuestionIndex] ===
                             "Image URL"
@@ -381,25 +283,9 @@ const PollDetails = ({
                           }
                         />
                       )}
-                      {questions[selectedQuestionIndex].options.length > 2 && (
-                        <button
-                          className="delete-btn"
-                          onClick={() =>
-                            handleDeleteOption(selectedQuestionIndex, optIndex)
-                          }
-                        >
-                          <Delete />
-                        </button>
-                      )}
                     </div>
                   )
                 )}
-                <button
-                  className="add-option-btn option-btn-poll"
-                  onClick={() => handleAddOption(selectedQuestionIndex)}
-                >
-                  Add option
-                </button>
               </div>
             </div>
           )}
@@ -410,42 +296,12 @@ const PollDetails = ({
             </button>
             <button
               className="create-quiz-btn"
-              onClick={handleCreateQuiz}
-              type="button" // Ensure this is a button, not a submit
+              onClick={handleUpdatePoll}
+              type="button"
             >
-              Create Quiz
+              Update Poll
             </button>
           </div>
-
-          {/* <div className="timer-section">
-          <label>Timer</label>
-          <div className="timer-options">
-            <button
-              className={`timer-btn ${
-                selectedTimer === "OFF" ? "selected" : ""
-              }`}
-              onClick={() => setSelectedTimer("OFF")}
-            >
-              OFF
-            </button>
-            <button
-              className={`timer-btn ${
-                selectedTimer === "5 sec" ? "selected" : ""
-              }`}
-              onClick={() => setSelectedTimer("5 sec")}
-            >
-              5 sec
-            </button>
-            <button
-              className={`timer-btn ${
-                selectedTimer === "10 sec" ? "selected" : ""
-              }`}
-              onClick={() => setSelectedTimer("10 sec")}
-            >
-              10 sec
-            </button>
-          </div>
-        </div> */}
         </div>
       ) : (
         <CopyLinkModal

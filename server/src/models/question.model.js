@@ -26,11 +26,10 @@ const questionSchema = new mongoose.Schema(
     ],
     timer: {
       type: Number,
-      enum: [T1, T2, T3],
       required: function () {
         return this.quizType === QNA;
       },
-      default: T1,
+      default: 0,
     },
   },
   { timestamps: true }

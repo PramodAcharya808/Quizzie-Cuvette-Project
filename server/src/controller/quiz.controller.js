@@ -84,11 +84,79 @@ const createQuiz = async (req, res) => {
   }
 };
 
+// const updateQuiz = async (req, res) => {
+//   try {
+//     const { questionText, options, timer } = req.body;
+//     const { quizId, questionId } = req.params;
+//     const userId = req.user._id;
+
+//     // Validate User
+//     const userIsQuizCreator = await Quiz.exists({
+//       _id: quizId,
+//       creatorId: userId,
+//     });
+//     if (!userIsQuizCreator) {
+//       throw new ApiResponse(403, "Your not authorized to edit this quiz");
+//     }
+
+//     const quizExists = await Quiz.exists({ _id: quizId });
+//     if (!quizExists) {
+//       throw new ApiResponse(404, "Quiz not found");
+//     }
+
+//     if (timer !== 0 && timer !== 5 && timer !== 10) {
+//       throw new ApiResponse(
+//         400,
+//         "Invalid timer value. Timer should be either 0, 5, or 10 seconds"
+//       );
+//     }
+
+//     // Validate Question ID
+//     const questionExists = await Question.exists({
+//       _id: questionId,
+//       quizId: quizId,
+//     });
+//     if (!questionExists) {
+//       throw new ApiResponse(404, "Question not found in the specified quiz");
+//     }
+
+//     if (questionText || timer !== undefined) {
+//       await Question.findByIdAndUpdate(questionId, {
+//         ...(questionText && { questionText }),
+//         ...(timer !== undefined && { timer }),
+//       });
+//     }
+
+//     if (options && options.length) {
+//       options.forEach(async (option) => {
+//         await Option.findByIdAndUpdate(option.optionId, {
+//           ...(option.optionText && { optionText: option.optionText }),
+//         });
+//       });
+//     }
+
+//     const quizObject = await Quiz.findById(quizId).populate({
+//       path: "questions",
+//       model: "Question",
+//       populate: {
+//         path: "options",
+//         model: "Option",
+//       },
+//     });
+
+//     return res.json(
+//       new ApiResponse(200, "Quiz Updated Successfully", quizObject)
+//     );
+//   } catch (error) {
+//     return res.json(new ApiError(500, "Error updating quiz", error));
+//   }
+// };
+
 const updateQuiz = async (req, res) => {
   try {
-    const { questionText, options, timer } = req.body;
-    const { quizId, questionId } = req.params;
+    const { questions } = req.body; // Expecting an array of questions
     const userId = req.user._id;
+    const { quizId } = req.params;
 
     // Validate User
     const userIsQuizCreator = await Quiz.exists({
@@ -96,46 +164,84 @@ const updateQuiz = async (req, res) => {
       creatorId: userId,
     });
     if (!userIsQuizCreator) {
-      throw new ApiResponse(403, "Your not authorized to edit this quiz");
+      return res
+        .status(403)
+        .json(new ApiResponse(403, "You're not authorized to edit this quiz"));
     }
 
     const quizExists = await Quiz.exists({ _id: quizId });
     if (!quizExists) {
-      throw new ApiResponse(404, "Quiz not found");
+      return res.status(404).json(new ApiResponse(404, "Quiz not found"));
     }
 
-    if (timer !== 0 && timer !== 5 && timer !== 10) {
-      throw new ApiResponse(
-        400,
-        "Invalid timer value. Timer should be either 0, 5, or 10 seconds"
-      );
-    }
-
-    // Validate Question ID
-    const questionExists = await Question.exists({
-      _id: questionId,
-      quizId: quizId,
+    const quiz = await Quiz.findById(quizId).populate({
+      path: "questions",
+      model: "Question",
+      populate: {
+        path: "options",
+        model: "Option",
+      },
     });
-    if (!questionExists) {
-      throw new ApiResponse(404, "Question not found in the specified quiz");
+
+    if (!quiz) {
+      return res.status(404).json(new ApiResponse(404, "Quiz not found"));
     }
 
-    if (questionText || timer !== undefined) {
-      await Question.findByIdAndUpdate(questionId, {
-        ...(questionText && { questionText }),
-        ...(timer !== undefined && { timer }),
-      });
-    }
+    // Loop through the questions array from the request body
+    for (const questionData of questions) {
+      const { questionId, questionText, options, timer } = questionData;
 
-    if (options && options.length) {
-      options.forEach(async (option) => {
-        await Option.findByIdAndUpdate(option.optionId, {
-          ...(option.optionText && { optionText: option.optionText }),
+      // Ensure that questionId is present and valid
+      if (!questionId) {
+        return res
+          .status(400)
+          .json(new ApiResponse(400, "Question ID is required"));
+      }
+
+      // Find the question to update
+      const questionToUpdate = quiz.questions.find((q) =>
+        q._id.equals(questionId)
+      );
+      if (!questionToUpdate) {
+        return res.status(404).json(new ApiResponse(404, "Question not found"));
+      }
+
+      // Update question fields if provided
+      if (questionText) {
+        questionToUpdate.questionText = questionText;
+      }
+      if (timer !== undefined) {
+        if (![0, 5, 10].includes(timer)) {
+          return res
+            .status(400)
+            .json(
+              new ApiResponse(
+                400,
+                "Invalid timer value. Timer should be either 0, 5, or 10 seconds"
+              )
+            );
+        }
+        questionToUpdate.timer = timer;
+      }
+
+      // Update options if provided
+      if (options && options.length) {
+        options.forEach(async (option) => {
+          const optionToUpdate = questionToUpdate.options.find(
+            (opt) => opt._id.toString() === option.optionId
+          );
+          if (optionToUpdate && option.optionText) {
+            optionToUpdate.optionText = option.optionText;
+          }
         });
-      });
+      }
+
+      await questionToUpdate.save();
     }
 
-    const quizObject = await Quiz.findById(quizId).populate({
+    await quiz.save();
+
+    const updatedQuiz = await Quiz.findById(quizId).populate({
       path: "questions",
       model: "Question",
       populate: {
@@ -145,12 +251,16 @@ const updateQuiz = async (req, res) => {
     });
 
     return res.json(
-      new ApiResponse(200, "Quiz Updated Successfully", quizObject)
+      new ApiResponse(200, "Quiz Updated Successfully", updatedQuiz)
     );
   } catch (error) {
-    return res.json(new ApiError(500, "Error updating quiz", error));
+    console.error("Error updating quiz", error); // Log the error for debugging
+    return res
+      .status(500)
+      .json(new ApiError(500, "Error updating quiz", error));
   }
 };
+
 
 const getQuizData = async (req, res) => {
   try {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./QuizDetails.css";
 import { toast, ToastContainer } from "react-toastify";
 import { Delete } from "../../../Icons/CustomIcons";
@@ -12,6 +12,7 @@ const QuizDetails = ({
   quizInfo,
   setQuizInfo,
   setSelectedType,
+  quizId, // Added quizId prop to identify the quiz being edited
 }) => {
   const handleCancel = () => {
     setShow(false);
@@ -21,76 +22,54 @@ const QuizDetails = ({
     setSelectedType(null);
   };
 
-  const [questions, setQuestions] = useState([
-    {
-      text: "",
-      options: [
-        { text: "", imageUrl: "" },
-        { text: "", imageUrl: "" },
-      ],
-    },
-  ]);
+  const [questions, setQuestions] = useState([]);
   const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
-  const [selectedOptionTypes, setSelectedOptionTypes] = useState(["Text"]);
-  const [questionTimers, setQuestionTimers] = useState(["OFF"]);
-  const [correctAnswers, setCorrectAnswers] = useState([null]);
+  const [selectedOptionTypes, setSelectedOptionTypes] = useState([]);
+  const [questionTimers, setQuestionTimers] = useState([]);
+  const [correctAnswers, setCorrectAnswers] = useState([]);
   const [created, setCreated] = useState(false);
   const [quizLink, setQuizLink] = useState("");
 
-  const handleAddQuestion = () => {
-    if (questions.length < 5) {
-      setQuestions([
-        ...questions,
-        {
-          text: "",
-          options: [
-            { text: "", imageUrl: "" },
-            { text: "", imageUrl: "" },
-          ],
-        },
-      ]);
-      setCorrectAnswers([...correctAnswers, null]);
-      setSelectedOptionTypes([...selectedOptionTypes, "Text"]);
-      setQuestionTimers([...questionTimers, "OFF"]); // Add a new timer for the new question
-      setSelectedQuestionIndex(questions.length);
-    } else {
-      toast.error("You can only add up to 5 questions.");
-    }
-  };
+  // Fetching quiz data
+  useEffect(() => {
+    async function fetchQuizData() {
+      try {
+        const response = await axios.get(`/api/quiz/view/${quizId}`);
+        const quizData = response.data.data;
 
-  const handleDeleteQuestion = (index) => {
-    if (questions.length > 1) {
-      const updatedQuestions = questions.filter((_, i) => i !== index);
-      setQuestions(updatedQuestions);
-      setCorrectAnswers(correctAnswers.filter((_, i) => i !== index));
-      setSelectedOptionTypes(selectedOptionTypes.filter((_, i) => i !== index));
-      setQuestionTimers(questionTimers.filter((_, i) => i !== index)); // Remove the timer for the deleted question
-      setSelectedQuestionIndex(Math.max(0, selectedQuestionIndex - 1));
-    }
-  };
-
-  const handleAddOption = (questionIndex) => {
-    if (questions[questionIndex].options.length < 4) {
-      const updatedQuestions = [...questions];
-      updatedQuestions[questionIndex].options.push({ text: "", imageUrl: "" });
-      setQuestions(updatedQuestions);
-    } else {
-      toast.error("You can only add up to 4 options.");
-    }
-  };
-
-  const handleDeleteOption = (questionIndex, optionIndex) => {
-    if (questions[questionIndex].options.length > 2) {
-      const updatedQuestions = [...questions];
-      updatedQuestions[questionIndex].options.splice(optionIndex, 1);
-      setQuestions(updatedQuestions);
-      if (correctAnswers[questionIndex] === optionIndex) {
-        const updatedCorrectAnswers = [...correctAnswers];
-        updatedCorrectAnswers[questionIndex] = null;
-        setCorrectAnswers(updatedCorrectAnswers);
+        // Populate state with quiz data, including IDs
+        setQuestions(
+          quizData.questions.map((question) => ({
+            _id: question._id, // Store question ID
+            text: question.questionText,
+            options: question.options.map((option) => ({
+              _id: option._id, // Store option ID
+              text: option.optionText,
+              imageUrl: option.imageURL,
+            })),
+          }))
+        );
+        setSelectedOptionTypes(
+          quizData.questions.map((question) => question.optionType)
+        );
+        setQuestionTimers(
+          quizData.questions.map((question) =>
+            question.timer === 0 ? "OFF" : `${question.timer} sec`
+          )
+        );
+        setCorrectAnswers(
+          quizData.questions.map((question) =>
+            question.options.findIndex((option) => option.isCorrect)
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching quiz data", error);
+        toast.error("Failed to fetch quiz data");
       }
     }
-  };
+
+    fetchQuizData();
+  }, [quizId]);
 
   const handleQuestionChange = (e, index) => {
     const updatedQuestions = [...questions];
@@ -98,23 +77,10 @@ const QuizDetails = ({
     setQuestions(updatedQuestions);
   };
 
-  const handleOptionChange = (e, questionIndex, optionIndex, field) => {
+  const handleOptionChange = (e, questionIndex, optionIndex) => {
     const updatedQuestions = [...questions];
-    updatedQuestions[questionIndex].options[optionIndex][field] =
-      e.target.value;
+    updatedQuestions[questionIndex].options[optionIndex].text = e.target.value;
     setQuestions(updatedQuestions);
-  };
-
-  const handleCorrectAnswerChange = (questionIndex, optionIndex) => {
-    const updatedCorrectAnswers = [...correctAnswers];
-    updatedCorrectAnswers[questionIndex] = optionIndex;
-    setCorrectAnswers(updatedCorrectAnswers);
-  };
-
-  const handleOptionTypeChange = (questionIndex, optionType) => {
-    const updatedOptionTypes = [...selectedOptionTypes];
-    updatedOptionTypes[questionIndex] = optionType;
-    setSelectedOptionTypes(updatedOptionTypes);
   };
 
   const handleTimerChange = (questionIndex, timerValue) => {
@@ -124,77 +90,69 @@ const QuizDetails = ({
   };
 
   const validateForm = () => {
-    if (!quizInfo.quizName || !quizInfo.quizType) {
-      toast.error("Quiz name and type are required.");
-      return false;
-    }
-
     for (let i = 0; i < questions.length; i++) {
       if (!questions[i].text) {
         toast.error(`Question ${i + 1} is required.`);
         return false;
       }
       for (let j = 0; j < questions[i].options.length; j++) {
-        if (
-          !questions[i].options[j].text &&
-          selectedOptionTypes[i] !== "Image URL"
-        ) {
+        if (!questions[i].options[j].text) {
           toast.error(`Option ${j + 1} in Question ${i + 1} is required.`);
           return false;
         }
-        if (
-          selectedOptionTypes[i] !== "Text" &&
-          !questions[i].options[j].imageUrl
-        ) {
-          toast.error(
-            `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
-          );
-          return false;
-        }
-      }
-      if (correctAnswers[i] === null) {
-        toast.error(`Please select the correct answer for Question ${i + 1}.`);
-        return false;
       }
     }
-
     return true;
   };
 
-  const handleCreateQuiz = async () => {
+  const handleUpdateQuiz = async () => {
     if (!validateForm()) {
       return;
     }
 
-    const quizData = {
-      quizName: quizInfo.quizName,
-      quizType: quizInfo.quizType,
+    // Ensure that questionId and optionId are included
+    const updatedQuizData = {
       questions: questions.map((question, index) => ({
+        questionId: question._id, // Use the stored question ID
         questionText: question.text,
-        optionType: selectedOptionTypes[index],
         options: question.options.map((option, optIndex) => ({
+          optionId: option._id, // Use the stored option ID
           optionText: option.text,
-          imageURL: option.imageUrl,
-          isCorrect: correctAnswers[index] === optIndex,
         })),
-        timer:
-          questionTimers[index] === "OFF"
-            ? 0
-            : parseInt(questionTimers[index].split(" ")[0], 10),
+        timer: validateTimer(questionTimers[index]), // Validate and convert timer
       })),
     };
 
-    console.log(quizData);
-
     try {
-      const response = await axios.post("/api/quiz/create", quizData);
-      console.log(response.data.data.quizLink);
+      const response = await axios.patch(
+        `/api/quiz/update/${quizId}`,
+        updatedQuizData
+      );
       setQuizLink(response.data.data.quizLink);
-      toast.success("Quiz created successfully!");
+      toast.success("Quiz updated successfully!");
       setCreated(true);
     } catch (error) {
-      console.log(error);
-      toast.error("Failed to create quiz. Please try again.");
+      console.error("Error updating quiz", error);
+      if (error.response && error.response.data) {
+        toast.error(`Error: ${error.response.data.message}`);
+      } else {
+        toast.error("Failed to update quiz. Please try again.");
+      }
+    }
+  };
+
+  // Helper function to validate and convert timer
+  const validateTimer = (timerValue) => {
+    const timerMap = {
+      OFF: 0,
+      "5 sec": 5,
+      "10 sec": 10,
+    };
+
+    if (timerMap.hasOwnProperty(timerValue)) {
+      return timerMap[timerValue];
+    } else {
+      return 0; // Default to 0 (OFF) if something goes wrong
     }
   };
 
@@ -237,9 +195,6 @@ const QuizDetails = ({
                 )}
               </div>
             ))}
-            <button className="add-question-btn" onClick={handleAddQuestion}>
-              +
-            </button>
             <p>Max 5 questions</p>
           </div>
 
@@ -268,12 +223,7 @@ const QuizDetails = ({
                     checked={
                       selectedOptionTypes[selectedQuestionIndex] === "Text"
                     }
-                    onChange={(e) =>
-                      handleOptionTypeChange(
-                        selectedQuestionIndex,
-                        e.target.value
-                      )
-                    }
+                    readOnly
                   />
                   <label htmlFor={`text-${selectedQuestionIndex}`}>Text</label>
 
@@ -285,12 +235,7 @@ const QuizDetails = ({
                     checked={
                       selectedOptionTypes[selectedQuestionIndex] === "Image URL"
                     }
-                    onChange={(e) =>
-                      handleOptionTypeChange(
-                        selectedQuestionIndex,
-                        e.target.value
-                      )
-                    }
+                    readOnly
                   />
                   <label htmlFor={`image-${selectedQuestionIndex}`}>
                     Image URL
@@ -305,12 +250,7 @@ const QuizDetails = ({
                       selectedOptionTypes[selectedQuestionIndex] ===
                       "Text & Image URL"
                     }
-                    onChange={(e) =>
-                      handleOptionTypeChange(
-                        selectedQuestionIndex,
-                        e.target.value
-                      )
-                    }
+                    readOnly
                   />
                   <label htmlFor={`textImage-${selectedQuestionIndex}`}>
                     Text & Image URL
@@ -328,107 +268,24 @@ const QuizDetails = ({
                         checked={
                           correctAnswers[selectedQuestionIndex] === optIndex
                         }
-                        onChange={() =>
-                          handleCorrectAnswerChange(
-                            selectedQuestionIndex,
-                            optIndex
-                          )
+                        readOnly
+                      />
+                      <input
+                        type="text"
+                        placeholder="Text"
+                        className={`option-input ${
+                          correctAnswers[selectedQuestionIndex] === optIndex
+                            ? "correct-selected"
+                            : ""
+                        }`}
+                        value={option.text}
+                        onChange={(e) =>
+                          handleOptionChange(e, selectedQuestionIndex, optIndex)
                         }
                       />
-                      {selectedOptionTypes[selectedQuestionIndex] ===
-                      "Text & Image URL" ? (
-                        <>
-                          <input
-                            type="text"
-                            id="textInput"
-                            placeholder="Text"
-                            className={`option-input ${
-                              correctAnswers[selectedQuestionIndex] === optIndex
-                                ? "correct-selected"
-                                : ""
-                            }`}
-                            value={option.text}
-                            onChange={(e) =>
-                              handleOptionChange(
-                                e,
-                                selectedQuestionIndex,
-                                optIndex,
-                                "text"
-                              )
-                            }
-                          />
-                          <input
-                            type="text"
-                            placeholder="Image URL"
-                            id="imageUrlInput"
-                            className={`option-input ${
-                              correctAnswers[selectedQuestionIndex] === optIndex
-                                ? "correct-selected"
-                                : ""
-                            }`}
-                            value={option.imageUrl}
-                            onChange={(e) =>
-                              handleOptionChange(
-                                e,
-                                selectedQuestionIndex,
-                                optIndex,
-                                "imageUrl"
-                              )
-                            }
-                          />
-                        </>
-                      ) : (
-                        <input
-                          type="text"
-                          placeholder={
-                            selectedOptionTypes[selectedQuestionIndex] ===
-                            "Image URL"
-                              ? "Image URL"
-                              : "Text"
-                          }
-                          className={`option-input ${
-                            correctAnswers[selectedQuestionIndex] === optIndex
-                              ? "correct-selected"
-                              : ""
-                          }`}
-                          value={
-                            selectedOptionTypes[selectedQuestionIndex] ===
-                            "Image URL"
-                              ? option.imageUrl
-                              : option.text
-                          }
-                          onChange={(e) =>
-                            handleOptionChange(
-                              e,
-                              selectedQuestionIndex,
-                              optIndex,
-                              selectedOptionTypes[selectedQuestionIndex] ===
-                                "Image URL"
-                                ? "imageUrl"
-                                : "text"
-                            )
-                          }
-                        />
-                      )}
-                      {questions[selectedQuestionIndex].options.length > 2 && (
-                        <button
-                          className="delete-btn"
-                          onClick={() =>
-                            handleDeleteOption(selectedQuestionIndex, optIndex)
-                          }
-                        >
-                          <Delete />
-                        </button>
-                      )}
                     </div>
                   )
                 )}
-                <button
-                  className="add-option-btn"
-                  onClick={() => handleAddOption(selectedQuestionIndex)}
-                >
-                  Add option
-                </button>
               </div>
             </div>
           )}
@@ -439,10 +296,10 @@ const QuizDetails = ({
             </button>
             <button
               className="create-quiz-btn"
-              onClick={handleCreateQuiz}
-              type="button" // Ensure this is a button, not a submit
+              onClick={handleUpdateQuiz}
+              type="button"
             >
-              Create Quiz
+              Update Quiz
             </button>
           </div>
 

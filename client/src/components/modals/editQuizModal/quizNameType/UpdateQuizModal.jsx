@@ -1,53 +1,44 @@
-import "./CreateQuizModal.css";
-import React, { useCallback, useState } from "react";
+import "./UpdateQuizModal.css";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import QuizDetails from "./../quizDetails/QuizDetails";
+import QuizDetails from "../quizDetails/QuizDetails";
 import PollDetails from "../quizDetails/PollDetails";
+import axios from "axios";
 
-const UpdateQuizModal = ({ show, setShow }) => {
+const UpdateQuizModal = ({ show, setShow, quizId }) => {
   const [selectedType, setSelectedType] = useState(null);
   const [next, setNext] = useState(false);
   const [quizInfo, setQuizInfo] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchQuiz() {
+      try {
+        const response = await axios.get(`/api/quiz/view/${quizId}`);
+        const quizData = response.data.data;
+        setQuizInfo({
+          quizName: quizData.quizName,
+          quizType: quizData.quizType,
+        });
+        setSelectedType(quizData.quizType);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching quiz data:", error);
+        setLoading(false);
+      }
+    }
+    if (show) {
+      fetchQuiz();
+    }
+  }, [show, quizId]);
 
   const {
-    register,
     handleSubmit,
     formState: { errors },
     reset,
     setError,
     clearErrors,
   } = useForm();
-
-  const handleSelection = useCallback(
-    (type) => {
-      if (type !== selectedType) {
-        setSelectedType(type);
-        clearErrors("quizType");
-      }
-    },
-    [selectedType, clearErrors]
-  );
-
-  const onSubmit = useCallback(
-    (data) => {
-      if (!selectedType) {
-        setError("quizType", {
-          type: "manual",
-          message: "Quiz type is required",
-        });
-        return;
-      }
-
-      const formData = {
-        quizName: data.quizName,
-        quizType: selectedType,
-      };
-
-      setQuizInfo(formData);
-      setNext(true);
-    },
-    [selectedType, setError]
-  );
 
   const handleCancel = useCallback(() => {
     reset();
@@ -56,26 +47,21 @@ const UpdateQuizModal = ({ show, setShow }) => {
     setShow(false);
   }, [reset, setShow]);
 
-  if (!show) return null;
+  if (!show || loading) return null;
 
   return (
     <div className="create-quiz-overlay">
       {!next ? (
         <form
           className="create-quiz-container"
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(() => setNext(true))}
         >
           <input
             type="text"
             placeholder="Quiz name"
             className="quiz-name-input"
-            {...register("quizName", {
-              required: "Quiz name is required",
-              maxLength: {
-                value: 24,
-                message: "Quiz name should be at most 24 characters long",
-              },
-            })}
+            value={quizInfo.quizName || ""}
+            disabled
           />
 
           <div className="quiz-type-selector-container">
@@ -86,7 +72,6 @@ const UpdateQuizModal = ({ show, setShow }) => {
                   ? `selected quiz-selector`
                   : `quiz-selector`
               }
-              onClick={() => handleSelection("Q&A")}
             >
               Q & A
             </div>
@@ -96,7 +81,6 @@ const UpdateQuizModal = ({ show, setShow }) => {
                   ? `selected quiz-selector`
                   : `quiz-selector`
               }
-              onClick={() => handleSelection("POLL")}
             >
               Poll Type
             </div>
@@ -124,6 +108,7 @@ const UpdateQuizModal = ({ show, setShow }) => {
           quizInfo={quizInfo}
           setSelectedType={setSelectedType}
           setQuizInfo={setQuizInfo}
+          quizId={quizId}
         />
       ) : (
         <PollDetails
@@ -133,6 +118,7 @@ const UpdateQuizModal = ({ show, setShow }) => {
           quizInfo={quizInfo}
           setSelectedType={setSelectedType}
           setQuizInfo={setQuizInfo}
+          quizId={quizId}
         />
       )}
     </div>
