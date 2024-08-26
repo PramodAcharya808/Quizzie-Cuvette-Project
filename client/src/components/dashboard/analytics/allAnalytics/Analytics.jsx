@@ -10,6 +10,7 @@ import DeleteModal from "../../../modals/deleteModal/DeleteModal";
 function Analytics() {
   const [allQuizList, setAllQuizList] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [update, setUpdate] = useState(false);
 
   const handleDeleteClick = () => {
     setShowModal(true);
