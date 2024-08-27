@@ -36,7 +36,7 @@ const CopyLinkModal = ({
     window.location.reload();
   };
 
-  const quizUrl = `http://localhost:5173/public/${quizLink}`;
+  const quizUrl = `http://localhost:5173/publicquiz/${quizLink}`;
 
   return (
     <div className="copy-quiz-link-container">

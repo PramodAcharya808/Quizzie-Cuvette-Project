@@ -35,7 +35,7 @@ function Analytics() {
   };
 
   const handleShare = (quizLink) => {
-    const quizUrl = `http://localhost:5173/public/${quizLink}`;
+    const quizUrl = `http://localhost:5173/publicquiz/${quizLink}`;
     try {
       navigator.clipboard.writeText(quizUrl);
       toast.success("Quiz link copied to clipboard");

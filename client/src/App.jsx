@@ -33,7 +33,7 @@ function App() {
             element={<PollWiseAnalytics />}
           />
         </Route>
-        <Route path="/public/:quizLink" element={<GameView />} />
+        <Route path="/publicquiz/:quizLink" element={<GameView />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
