@@ -14,7 +14,7 @@ const CopyLinkModal = ({
 
   const copyToClipboard = () => {
     if (inputRef.current) {
-      navigator.clipboard.writeText(inputRef.current.value).then(
+      navigator.clipboard.writeText(inputRef.currenat.value).then(
         () => {
           console.log("Copied to clipboard successfully!");
           toast.success("Link copied to clipboard!");

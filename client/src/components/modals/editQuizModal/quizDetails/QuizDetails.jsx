@@ -45,7 +45,7 @@ const QuizDetails = ({
             options: question.options.map((option) => ({
               _id: option._id, // Store option ID
               text: option.optionText,
-              imageUrl: option.imageURL,
+              imageURL: option.imageURL, // Correctly populate the imageURL field
             })),
           }))
         );
@@ -118,8 +118,10 @@ const QuizDetails = ({
         options: question.options.map((option, optIndex) => ({
           optionId: option._id, // Use the stored option ID
           optionText: option.text,
+          imageURL: option.imageURL, // Ensure imageURL is sent in the update
+          isCorrect: correctAnswers[index] === optIndex,
         })),
-        timer: validateTimer(questionTimers[index]), // Validate and convert timer
+        timer: validateTimer(questionTimers[index]),
       })),
     };
 
@@ -278,7 +280,7 @@ const QuizDetails = ({
                             ? "correct-selected"
                             : ""
                         }`}
-                        value={option.text}
+                        value={option.imageURL}
                         onChange={(e) =>
                           handleOptionChange(e, selectedQuestionIndex, optIndex)
                         }

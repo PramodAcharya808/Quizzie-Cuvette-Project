@@ -63,6 +63,15 @@
     margin-top: 15%;
   }
 
+  .text-game-continue-btn {
+    background: #60B84B;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 1rem 6.5rem;
+    border-radius: 1rem;
+    margin-top: 15%;
+  }
 
   .url-option-holder {
     background: #F0F0F0;
@@ -117,5 +126,44 @@
   .text-url-text {
     font-size: 2.5rem;
     font-weight: 600;
+  }
+
+  .qna-result-container {
+    border-radius: 0;
+    min-width: 100%;
+    min-height: 100%;
+    background: white;
+    box-sizing: border-box;
+    overflow: auto;
+  }
+
+  .qna-result-container img {
+    height: 45%;
+    width: auto;
+  }
+
+  .congrats {
+    font-size: 3.5rem;
+    font-weight: 700;
+  }
+
+  .score-display {
+    font-size: 3.5rem;
+    font-weight: 700;
+  }
+
+  .poll-result-container {
+    border-radius: 0;
+    min-width: 100%;
+    min-height: 100%;
+    background: white;
+    box-sizing: border-box;
+    overflow: auto;
+  }
+
+
+  .poll-result-container p {
+    font-size: 3.4rem;
+    font-weight: 700;
   }
 }

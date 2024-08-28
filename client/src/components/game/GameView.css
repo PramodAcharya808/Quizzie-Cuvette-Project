@@ -16,7 +16,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  /* z-index: 1010; */
+
 }
 
 
@@ -89,6 +89,16 @@
   border-radius: 1rem;
 }
 
+.text-game-continue-btn {
+  background: #60B84B;
+  color: white;
+  font-size: 3rem;
+  font-weight: 600;
+  padding: 1rem 8rem;
+  border-radius: 1rem;
+  margin-top: 7.5%;
+}
+
 .url-option-holder {
   background: #F0F0F0;
   border-radius: 1.5rem;
@@ -157,4 +167,63 @@
 .text-url-text {
   font-size: 2.5rem;
   font-weight: 600;
+}
+
+.qna-result-container {
+  background: #FFFFFF;
+  border-radius: 1.5rem;
+  text-align: center;
+  max-width: 90%;
+  max-height: 80%;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2.5rem;
+  z-index: 1100;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.congrats {
+  font-size: 4rem;
+  font-weight: 700;
+}
+
+.qna-result-container img {
+  width: 20%;
+}
+
+.score-display {
+  font-size: 4rem;
+  font-weight: 700;
+}
+
+.score-display span {
+  color: #60B84B;
+}
+
+.poll-result-container {
+  background: #FFFFFF;
+  border-radius: 1.5rem;
+  text-align: center;
+  max-width: 90%;
+  max-height: 80%;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2.5rem;
+  z-index: 1100;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.poll-result-container p {
+  font-size: 7.4rem;
+  font-weight: 700;
 }

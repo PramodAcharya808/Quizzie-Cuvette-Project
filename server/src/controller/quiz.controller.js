@@ -154,113 +154,86 @@ const createQuiz = async (req, res) => {
 
 const updateQuiz = async (req, res) => {
   try {
-    const { questions } = req.body; // Expecting an array of questions
-    const userId = req.user._id;
     const { quizId } = req.params;
+    const { questions } = req.body;
 
-    // Validate User
-    const userIsQuizCreator = await Quiz.exists({
-      _id: quizId,
-      creatorId: userId,
-    });
-    if (!userIsQuizCreator) {
-      return res
-        .status(403)
-        .json(new ApiResponse(403, "You're not authorized to edit this quiz"));
+    // Find the existing quiz
+    const quizObject = await Quiz.findById(quizId);
+    if (!quizObject) {
+      throw new ApiError(404, "Quiz not found");
     }
 
-    const quizExists = await Quiz.exists({ _id: quizId });
-    if (!quizExists) {
-      return res.status(404).json(new ApiResponse(404, "Quiz not found"));
-    }
-
-    const quiz = await Quiz.findById(quizId).populate({
-      path: "questions",
-      model: "Question",
-      populate: {
-        path: "options",
-        model: "Option",
-      },
-    });
-
-    if (!quiz) {
-      return res.status(404).json(new ApiResponse(404, "Quiz not found"));
-    }
-
-    // Loop through the questions array from the request body
+    // Update each question
     for (const questionData of questions) {
-      const { questionId, questionText, options, timer } = questionData;
+      const { questionId, questionText, options } = questionData;
 
-      // Ensure that questionId is present and valid
-      if (!questionId) {
-        return res
-          .status(400)
-          .json(new ApiResponse(400, "Question ID is required"));
+      // Find the existing question
+      const questionObject = await Question.findById(questionId);
+      if (
+        !questionObject ||
+        String(questionObject.quizId) !== String(quizObject._id)
+      ) {
+        throw new ApiError(
+          404,
+          `Question with ID ${questionId} not found in this quiz`
+        );
       }
 
-      // Find the question to update
-      const questionToUpdate = quiz.questions.find((q) =>
-        q._id.equals(questionId)
-      );
-      if (!questionToUpdate) {
-        return res.status(404).json(new ApiResponse(404, "Question not found"));
+      // Update the question text if provided
+      if (questionText !== undefined) {
+        questionObject.questionText = questionText;
       }
 
-      // Update question fields if provided
-      if (questionText) {
-        questionToUpdate.questionText = questionText;
-      }
-      if (timer !== undefined) {
-        if (![0, 5, 10].includes(timer)) {
-          return res
-            .status(400)
-            .json(
-              new ApiResponse(
-                400,
-                "Invalid timer value. Timer should be either 0, 5, or 10 seconds"
-              )
-            );
-        }
-        questionToUpdate.timer = timer;
-      }
+      // Update each option
+      for (const optionData of options) {
+        const { optionId, optionText, imageURL, isCorrect } = optionData;
 
-      // Update options if provided
-      if (options && options.length) {
-        options.forEach(async (option) => {
-          const optionToUpdate = questionToUpdate.options.find(
-            (opt) => opt._id.toString() === option.optionId
+        // Find the existing option
+        const optionObject = await Option.findById(optionId);
+        if (
+          !optionObject ||
+          String(optionObject.questionId) !== String(questionObject._id)
+        ) {
+          throw new ApiError(
+            404,
+            `Option with ID ${optionId} not found in this question`
           );
-          if (optionToUpdate && option.optionText) {
-            optionToUpdate.optionText = option.optionText;
-          }
-        });
+        }
+
+        // Update the option fields if provided
+        if (optionText !== undefined) {
+          optionObject.optionText = optionText;
+        }
+        if (imageURL !== undefined) {
+          optionObject.imageURL = imageURL;
+        }
+        if (isCorrect !== undefined) {
+          optionObject.isCorrect = isCorrect;
+        }
+
+        // Save the updated option
+        await optionObject.save();
       }
 
-      await questionToUpdate.save();
+      // Save the updated question
+      await questionObject.save();
     }
 
-    await quiz.save();
-
+    // Return the updated quiz object
     const updatedQuiz = await Quiz.findById(quizId).populate({
       path: "questions",
-      model: "Question",
       populate: {
         path: "options",
-        model: "Option",
       },
     });
 
-    return res.json(
-      new ApiResponse(200, "Quiz Updated Successfully", updatedQuiz)
-    );
-  } catch (error) {
-    console.error("Error updating quiz", error); // Log the error for debugging
     return res
-      .status(500)
-      .json(new ApiError(500, "Error updating quiz", error));
+      .status(200)
+      .json(new ApiResponse(200, "Quiz Updated Successfully", updatedQuiz));
+  } catch (error) {
+    return res.json(new ApiError(500, "Error updating quiz", error));
   }
 };
-
 
 const getQuizData = async (req, res) => {
   try {

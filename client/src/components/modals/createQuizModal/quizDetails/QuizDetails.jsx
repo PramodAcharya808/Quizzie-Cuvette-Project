@@ -25,8 +25,8 @@ const QuizDetails = ({
     {
       text: "",
       options: [
-        { text: "", imageUrl: "" },
-        { text: "", imageUrl: "" },
+        { text: "", imageURL: "" },
+        { text: "", imageURL: "" },
       ],
     },
   ]);
@@ -44,14 +44,14 @@ const QuizDetails = ({
         {
           text: "",
           options: [
-            { text: "", imageUrl: "" },
-            { text: "", imageUrl: "" },
+            { text: "", imageURL: "" },
+            { text: "", imageURL: "" },
           ],
         },
       ]);
       setCorrectAnswers([...correctAnswers, null]);
       setSelectedOptionTypes([...selectedOptionTypes, "Text"]);
-      setQuestionTimers([...questionTimers, "OFF"]); // Add a new timer for the new question
+      setQuestionTimers([...questionTimers, "OFF"]);
       setSelectedQuestionIndex(questions.length);
     } else {
       toast.error("You can only add up to 5 questions.");
@@ -64,7 +64,7 @@ const QuizDetails = ({
       setQuestions(updatedQuestions);
       setCorrectAnswers(correctAnswers.filter((_, i) => i !== index));
       setSelectedOptionTypes(selectedOptionTypes.filter((_, i) => i !== index));
-      setQuestionTimers(questionTimers.filter((_, i) => i !== index)); // Remove the timer for the deleted question
+      setQuestionTimers(questionTimers.filter((_, i) => i !== index));
       setSelectedQuestionIndex(Math.max(0, selectedQuestionIndex - 1));
     }
   };
@@ -72,7 +72,7 @@ const QuizDetails = ({
   const handleAddOption = (questionIndex) => {
     if (questions[questionIndex].options.length < 4) {
       const updatedQuestions = [...questions];
-      updatedQuestions[questionIndex].options.push({ text: "", imageUrl: "" });
+      updatedQuestions[questionIndex].options.push({ text: "", imageURL: "" });
       setQuestions(updatedQuestions);
     } else {
       toast.error("You can only add up to 4 options.");
@@ -144,7 +144,7 @@ const QuizDetails = ({
         }
         if (
           selectedOptionTypes[i] !== "Text" &&
-          !questions[i].options[j].imageUrl
+          !questions[i].options[j].imageURL
         ) {
           toast.error(
             `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
@@ -174,7 +174,7 @@ const QuizDetails = ({
         optionType: selectedOptionTypes[index],
         options: question.options.map((option, optIndex) => ({
           optionText: option.text,
-          imageURL: option.imageUrl,
+          imageURL: option.imageURL, // Correctly store the imageURL field
           isCorrect: correctAnswers[index] === optIndex,
         })),
         timer:
@@ -184,16 +184,13 @@ const QuizDetails = ({
       })),
     };
 
-    console.log(quizData);
-
     try {
       const response = await axios.post("/api/quiz/create", quizData);
-      console.log(response.data.data.quizLink);
       setQuizLink(response.data.data.quizLink);
       toast.success("Quiz created successfully!");
       setCreated(true);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Failed to create quiz. Please try again.");
     }
   };
@@ -366,13 +363,13 @@ const QuizDetails = ({
                                 ? "correct-selected"
                                 : ""
                             }`}
-                            value={option.imageUrl}
+                            value={option.imageURL}
                             onChange={(e) =>
                               handleOptionChange(
                                 e,
                                 selectedQuestionIndex,
                                 optIndex,
-                                "imageUrl"
+                                "imageURL"
                               )
                             }
                           />
@@ -394,7 +391,7 @@ const QuizDetails = ({
                           value={
                             selectedOptionTypes[selectedQuestionIndex] ===
                             "Image URL"
-                              ? option.imageUrl
+                              ? option.imageURL
                               : option.text
                           }
                           onChange={(e) =>
@@ -404,7 +401,7 @@ const QuizDetails = ({
                               optIndex,
                               selectedOptionTypes[selectedQuestionIndex] ===
                                 "Image URL"
-                                ? "imageUrl"
+                                ? "imageURL"
                                 : "text"
                             )
                           }
@@ -440,7 +437,7 @@ const QuizDetails = ({
             <button
               className="create-quiz-btn"
               onClick={handleCreateQuiz}
-              type="button" // Ensure this is a button, not a submit
+              type="button"
             >
               Create Quiz
             </button>

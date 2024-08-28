@@ -10,7 +10,7 @@ const optionSchema = new mongoose.Schema(
     },
     optionText: {
       type: String,
-      required: true,
+      // required: true,
     },
     imageURL: {
       type: String,
