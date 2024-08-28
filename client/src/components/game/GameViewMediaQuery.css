@@ -33,6 +33,7 @@
     justify-content: center;
     align-items: center;
     display: flex;
+    width: 100%;
     flex-direction: column;
   }
 
@@ -43,12 +44,14 @@
     justify-content: center;
     align-items: center;
     display: flex;
+    width: 100%;
     flex-direction: column;
   }
 
   .text-option-holder {
     padding: 1.5rem;
     width: 80%;
+    height: 100%;
     font-size: 2rem;
   }
 
@@ -89,6 +92,7 @@
   }
 
   .texturl-game-container {
+    width: 100%;
     display: flex;
     flex-direction: column;
     row-gap: 3rem;
