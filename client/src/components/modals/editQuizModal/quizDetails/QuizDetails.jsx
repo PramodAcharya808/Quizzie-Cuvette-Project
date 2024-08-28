@@ -77,9 +77,23 @@ const QuizDetails = ({
     setQuestions(updatedQuestions);
   };
 
-  const handleOptionChange = (e, questionIndex, optionIndex) => {
+  // const handleOptionChange = (e, questionIndex, optionIndex) => {
+  //   const updatedQuestions = [...questions];
+  //   updatedQuestions[questionIndex].options[optionIndex].imageURL =
+  //     e.target.value;
+  //   setQuestions(updatedQuestions);
+  // };
+
+  const handleOptionTextChange = (e, questionIndex, optionIndex) => {
     const updatedQuestions = [...questions];
     updatedQuestions[questionIndex].options[optionIndex].text = e.target.value;
+    setQuestions(updatedQuestions);
+  };
+
+  const handleOptionImageURLChange = (e, questionIndex, optionIndex) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[questionIndex].options[optionIndex].imageURL =
+      e.target.value;
     setQuestions(updatedQuestions);
   };
 
@@ -88,17 +102,44 @@ const QuizDetails = ({
     updatedTimers[questionIndex] = timerValue;
     setQuestionTimers(updatedTimers);
   };
-
   const validateForm = () => {
     for (let i = 0; i < questions.length; i++) {
-      if (!questions[i].text) {
+      if (!questions[i].text.trim()) {
         toast.error(`Question ${i + 1} is required.`);
         return false;
       }
+
       for (let j = 0; j < questions[i].options.length; j++) {
-        if (!questions[i].options[j].text) {
-          toast.error(`Option ${j + 1} in Question ${i + 1} is required.`);
+        const optionType = selectedOptionTypes[i]; // Get the option type for the current question
+        const option = questions[i].options[j];
+
+        if (optionType === "Text" && !option.text.trim()) {
+          toast.error(
+            `Text for Option ${j + 1} in Question ${i + 1} is required.`
+          );
           return false;
+        }
+
+        if (optionType === "Image URL" && !option.imageURL.trim()) {
+          toast.error(
+            `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
+          );
+          return false;
+        }
+
+        if (optionType === "Text and Image URL") {
+          if (!option.text.trim()) {
+            toast.error(
+              `Text for Option ${j + 1} in Question ${i + 1} is required.`
+            );
+            return false;
+          }
+          if (!option.imageURL.trim()) {
+            toast.error(
+              `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
+            );
+            return false;
+          }
         }
       }
     }
@@ -130,6 +171,8 @@ const QuizDetails = ({
         `/api/quiz/update/${quizId}`,
         updatedQuizData
       );
+      console.log(response);
+
       setQuizLink(response.data.data.quizLink);
       toast.success("Quiz updated successfully!");
       setCreated(true);
@@ -247,10 +290,10 @@ const QuizDetails = ({
                     type="radio"
                     id={`textImage-${selectedQuestionIndex}`}
                     name={`optionType${selectedQuestionIndex}`}
-                    value="Text & Image URL"
+                    value="Text and Image URL"
                     checked={
                       selectedOptionTypes[selectedQuestionIndex] ===
-                      "Text & Image URL"
+                      "Text and Image URL"
                     }
                     readOnly
                   />
@@ -272,19 +315,88 @@ const QuizDetails = ({
                         }
                         readOnly
                       />
-                      <input
-                        type="text"
-                        placeholder="Text"
-                        className={`option-input ${
-                          correctAnswers[selectedQuestionIndex] === optIndex
-                            ? "correct-selected"
-                            : ""
-                        }`}
-                        value={option.imageURL}
-                        onChange={(e) =>
-                          handleOptionChange(e, selectedQuestionIndex, optIndex)
-                        }
-                      />
+
+                      {selectedOptionTypes[selectedQuestionIndex] ===
+                        "Text" && (
+                        <input
+                          type="text"
+                          placeholder="Text"
+                          className={`option-input ${
+                            correctAnswers[selectedQuestionIndex] === optIndex
+                              ? "correct-selected"
+                              : ""
+                          }`}
+                          value={option.text}
+                          onChange={(e) =>
+                            handleOptionTextChange(
+                              e,
+                              selectedQuestionIndex,
+                              optIndex
+                            )
+                          }
+                        />
+                      )}
+
+                      {selectedOptionTypes[selectedQuestionIndex] ===
+                        "Image URL" && (
+                        <input
+                          type="text"
+                          placeholder="Image URL"
+                          className={`option-input ${
+                            correctAnswers[selectedQuestionIndex] === optIndex
+                              ? "correct-selected"
+                              : ""
+                          }`}
+                          value={option.imageURL}
+                          onChange={(e) =>
+                            handleOptionImageURLChange(
+                              e,
+                              selectedQuestionIndex,
+                              optIndex
+                            )
+                          }
+                        />
+                      )}
+
+                      {selectedOptionTypes[selectedQuestionIndex] ===
+                        "Text and Image URL" && (
+                        <>
+                          <input
+                            type="text"
+                            placeholder="Text"
+                            className={`option-input text-option-input-update ${
+                              correctAnswers[selectedQuestionIndex] === optIndex
+                                ? "correct-selected"
+                                : ""
+                            }`}
+                            value={option.text}
+                            onChange={(e) =>
+                              handleOptionTextChange(
+                                e,
+                                selectedQuestionIndex,
+                                optIndex
+                              )
+                            }
+                          />
+                          <input
+                            type="text"
+                            placeholder="Image URL"
+                            className={`option-input ${
+                              correctAnswers[selectedQuestionIndex] === optIndex
+                                ? "correct-selected"
+                                : ""
+                            }`}
+                            value={option.imageURL}
+                            onChange={(e) =>
+                              handleOptionImageURLChange(
+                                e,
+                                selectedQuestionIndex,
+                                optIndex
+                              )
+                            }
+                          />
+                        </>
+                      )}
                     </div>
                   )
                 )}

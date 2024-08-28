@@ -199,7 +199,7 @@ const QuizDetails = ({
     <>
       <ToastContainer
         position="top-right"
-        autoClose={1000}
+        autoClose={2000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
@@ -297,10 +297,10 @@ const QuizDetails = ({
                     type="radio"
                     id={`textImage-${selectedQuestionIndex}`}
                     name={`optionType${selectedQuestionIndex}`}
-                    value="Text & Image URL"
+                    value="Text and Image URL"
                     checked={
                       selectedOptionTypes[selectedQuestionIndex] ===
-                      "Text & Image URL"
+                      "Text and Image URL"
                     }
                     onChange={(e) =>
                       handleOptionTypeChange(
@@ -333,13 +333,13 @@ const QuizDetails = ({
                         }
                       />
                       {selectedOptionTypes[selectedQuestionIndex] ===
-                      "Text & Image URL" ? (
+                      "Text and Image URL" ? (
                         <>
                           <input
                             type="text"
                             id="textInput"
                             placeholder="Text"
-                            className={`option-input ${
+                            className={`option-input   ${
                               correctAnswers[selectedQuestionIndex] === optIndex
                                 ? "correct-selected"
                                 : ""

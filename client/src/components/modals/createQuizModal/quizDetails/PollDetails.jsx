@@ -186,7 +186,7 @@ const PollDetails = ({
     <>
       <ToastContainer
         position="top-right"
-        autoClose={1000}
+        autoClose={2000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
@@ -284,10 +284,10 @@ const PollDetails = ({
                     type="radio"
                     id={`textImage-${selectedQuestionIndex}`}
                     name={`optionType${selectedQuestionIndex}`}
-                    value="Text & Image URL"
+                    value="Text and Image URL"
                     checked={
                       selectedOptionTypes[selectedQuestionIndex] ===
-                      "Text & Image URL"
+                      "Text and Image URL"
                     }
                     onChange={(e) =>
                       handleOptionTypeChange(
@@ -307,7 +307,7 @@ const PollDetails = ({
                   (option, optIndex) => (
                     <div key={optIndex} className="option">
                       {selectedOptionTypes[selectedQuestionIndex] ===
-                      "Text & Image URL" ? (
+                      "Text and Image URL" ? (
                         <>
                           <input
                             type="text"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 const TextOverlay = ({
   questionText,
@@ -11,31 +11,42 @@ const TextOverlay = ({
   onSubmit,
 }) => {
   const [timeLeft, setTimeLeft] = useState(timer);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const intervalRef = useRef(null);
   const isLastQuestion = currentQuestionNumber === totalQuestions;
 
+  console.log("Full render");
+
   useEffect(() => {
-    // Start timer only if timer value is greater than 0
+    // Reset the timer when a new question is loaded
+    setTimeLeft(timer);
+    console.log("Rendered inside useeffect");
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
     if (timer > 0) {
-      // Clear existing interval on component unmount or when timer changes
-      const id = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
-            clearInterval(id);
-            if (onNext) onNext(); // Automatically move to the next question when timer runs out
+            clearInterval(intervalRef.current);
+            onNext();
             return 0;
           }
           return prevTime - 1;
         });
       }, 1000);
-
-      // Cleanup function
-      return () => clearInterval(id);
     }
-  }, [timer, onNext]);
 
-  useEffect(() => {
-    setTimeLeft(timer); // Reset timeLeft when timer changes
-  }, [timer]);
+    return () => clearInterval(intervalRef.current); // Cleanup the interval on unmount or when the question changes
+  }, [currentQuestionNumber]);
+
+  const handleOptionClick = (optionId) => {
+    setSelectedOptionId(optionId);
+    onOptionClick(optionId);
+    console.log("Rendered inside option clicked");
+  };
 
   return (
     <div className="question-overlay">
@@ -45,17 +56,15 @@ const TextOverlay = ({
           .padStart(2, "0")}/${totalQuestions.toString().padStart(2, "0")}`}</p>
         {timeLeft > 0 && <p className="question-timer">{`00:${timeLeft}s`}</p>}
       </div>
-      <p className="question-text-holder">
-        {questionText} {/* Display the question text */}
-      </p>
+      <p className="question-text-holder">{questionText}</p>
       <div className="game-options-container">
         {options.map((option) => (
           <div
             key={option._id}
             className={`text-option-holder ${
-              option.selected ? "selected" : ""
+              option._id === selectedOptionId ? "game-selected" : ""
             }`}
-            onClick={() => onOptionClick(option._id)}
+            onClick={() => handleOptionClick(option._id)}
           >
             {option.optionText}
           </div>

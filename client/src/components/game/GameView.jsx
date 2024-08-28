@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./GameView.css";
 import "./GameViewMediaQuery.css";
 import { v4 as uuidv4 } from "uuid";
@@ -17,6 +17,7 @@ const GameView = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [results, setResults] = useState(null); // New state to store results
 
   // Retrieve sessionId from local storage or create a new one
   const sessionId = localStorage.getItem("sessionId") || uuidv4();
@@ -24,11 +25,23 @@ const GameView = () => {
     localStorage.setItem("sessionId", sessionId);
   }
 
+  // Function to increase quiz impression
+  const increaseImpression = useCallback(async (quizId) => {
+    try {
+      await axios.post(`/api/analytics/increaseimpression/${quizId}`);
+    } catch (error) {
+      console.error("Failed to increase quiz impression", error);
+    }
+  }, []);
+
   useEffect(() => {
     async function getQuiz() {
       try {
         const response = await axios.get(`/api/public/quiz/${quizLink}`);
         setQuizData(response.data.data);
+
+        // Increase impression once when the quiz data is successfully fetched
+        increaseImpression(response.data.data._id);
       } catch (error) {
         console.error(error);
       }
@@ -45,9 +58,9 @@ const GameView = () => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [quizLink]);
+  }, [quizLink, increaseImpression]);
 
-  const handleNext = async () => {
+  const handleNext = useCallback(async () => {
     if (currentQuestionIndex + 1 === quizData.questions.length) {
       setIsSubmitting(true);
       await handleSubmit(); // Ensure submission is handled
@@ -68,9 +81,9 @@ const GameView = () => {
         console.error(error);
       }
     }
-  };
+  }, [currentQuestionIndex, quizData, selectedOption, sessionId]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     const question = quizData.questions[currentQuestionIndex];
     const answerData = {
       quizId: quizData._id,
@@ -80,7 +93,9 @@ const GameView = () => {
     };
 
     try {
-      await axios.post("/api/public/quiz/start/", answerData);
+      const response = await axios.post("/api/public/quiz/start/", answerData);
+      const { totalCorrect, totalQuestions } = response.data.data;
+      setResults({ totalCorrect, totalQuestions }); // Store the results
       setQuizCompleted(true);
       localStorage.removeItem("sessionId"); // Clear sessionId on submit
     } catch (error) {
@@ -88,14 +103,22 @@ const GameView = () => {
     } finally {
       setIsSubmitting(false); // Ensure isSubmitting is reset
     }
-  };
+  }, [currentQuestionIndex, quizData, selectedOption, sessionId]);
 
-  const handleOptionClick = (optionId) => {
+  const handleOptionClick = useCallback((optionId) => {
     setSelectedOption(optionId);
-  };
+  }, []);
 
   if (quizCompleted) {
-    return quizData.quizType === "Q&A" ? <QnaResult /> : <PollResult />;
+    return quizData.quizType === "Q&A" ? (
+      <div className="game-view-container">
+        <QnaResult results={results} />
+      </div>
+    ) : (
+      <div className="game-view-container">
+        <PollResult />
+      </div>
+    );
   }
 
   if (isSubmitting) {

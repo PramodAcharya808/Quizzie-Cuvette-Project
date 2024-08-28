@@ -65,22 +65,50 @@ const PollDetails = ({
     setQuestions(updatedQuestions);
   };
 
-  const handleOptionChange = (e, questionIndex, optionIndex) => {
+  const handleOptionChange = (e, questionIndex, optionIndex, field) => {
     const updatedQuestions = [...questions];
-    updatedQuestions[questionIndex].options[optionIndex].text = e.target.value;
+    updatedQuestions[questionIndex].options[optionIndex][field] =
+      e.target.value;
     setQuestions(updatedQuestions);
   };
 
   const validateForm = () => {
     for (let i = 0; i < questions.length; i++) {
-      if (!questions[i].text) {
+      if (!questions[i].text.trim()) {
         toast.error(`Question ${i + 1} is required.`);
         return false;
       }
       for (let j = 0; j < questions[i].options.length; j++) {
-        if (!questions[i].options[j].text) {
-          toast.error(`Option ${j + 1} in Question ${i + 1} is required.`);
+        const optionType = selectedOptionTypes[i];
+        const option = questions[i].options[j];
+
+        if (optionType === "Text" && !option.text.trim()) {
+          toast.error(
+            `Text for Option ${j + 1} in Question ${i + 1} is required.`
+          );
           return false;
+        }
+
+        if (optionType === "Image URL" && !option.imageUrl.trim()) {
+          toast.error(
+            `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
+          );
+          return false;
+        }
+
+        if (optionType === "Text and Image URL") {
+          if (!option.text.trim()) {
+            toast.error(
+              `Text for Option ${j + 1} in Question ${i + 1} is required.`
+            );
+            return false;
+          }
+          if (!option.imageUrl.trim()) {
+            toast.error(
+              `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
+            );
+            return false; // Ensure this return is within the condition
+          }
         }
       }
     }
@@ -92,6 +120,8 @@ const PollDetails = ({
       return;
     }
 
+    console.log(questions);
+
     // Ensure that questionId and optionId are included
     const updatedQuizData = {
       questions: questions.map((question) => ({
@@ -100,6 +130,7 @@ const PollDetails = ({
         options: question.options.map((option) => ({
           optionId: option._id, // Use the stored option ID
           optionText: option.text,
+          imageURL: option.imageUrl,
         })),
       })),
     };
@@ -203,10 +234,10 @@ const PollDetails = ({
                     type="radio"
                     id={`textImage-${selectedQuestionIndex}`}
                     name={`optionType${selectedQuestionIndex}`}
-                    value="Text & Image URL"
+                    value="Text and Image URL"
                     checked={
                       selectedOptionTypes[selectedQuestionIndex] ===
-                      "Text & Image URL"
+                      "Text and Image URL"
                     }
                     readOnly
                   />
@@ -221,13 +252,48 @@ const PollDetails = ({
                   (option, optIndex) => (
                     <div key={optIndex} className="option">
                       {selectedOptionTypes[selectedQuestionIndex] ===
-                      "Text & Image URL" ? (
+                        "Text" && (
+                        <input
+                          type="text"
+                          placeholder="Text"
+                          className="option-input"
+                          value={option.text}
+                          onChange={(e) =>
+                            handleOptionChange(
+                              e,
+                              selectedQuestionIndex,
+                              optIndex,
+                              "text"
+                            )
+                          }
+                        />
+                      )}
+
+                      {selectedOptionTypes[selectedQuestionIndex] ===
+                        "Image URL" && (
+                        <input
+                          type="text"
+                          placeholder="Image URL"
+                          className="option-input"
+                          value={option.imageUrl}
+                          onChange={(e) =>
+                            handleOptionChange(
+                              e,
+                              selectedQuestionIndex,
+                              optIndex,
+                              "imageUrl"
+                            )
+                          }
+                        />
+                      )}
+
+                      {selectedOptionTypes[selectedQuestionIndex] ===
+                        "Text and Image URL" && (
                         <>
                           <input
                             type="text"
-                            id="textInput"
                             placeholder="Text"
-                            className="option-input"
+                            className="option-input text-option-input-update"
                             value={option.text}
                             onChange={(e) =>
                               handleOptionChange(
@@ -241,7 +307,6 @@ const PollDetails = ({
                           <input
                             type="text"
                             placeholder="Image URL"
-                            id="imageUrlInput"
                             className="option-input"
                             value={option.imageUrl}
                             onChange={(e) =>
@@ -254,34 +319,6 @@ const PollDetails = ({
                             }
                           />
                         </>
-                      ) : (
-                        <input
-                          type="text"
-                          placeholder={
-                            selectedOptionTypes[selectedQuestionIndex] ===
-                            "Image URL"
-                              ? "Image URL"
-                              : "Text"
-                          }
-                          className="option-input"
-                          value={
-                            selectedOptionTypes[selectedQuestionIndex] ===
-                            "Image URL"
-                              ? option.imageUrl
-                              : option.text
-                          }
-                          onChange={(e) =>
-                            handleOptionChange(
-                              e,
-                              selectedQuestionIndex,
-                              optIndex,
-                              selectedOptionTypes[selectedQuestionIndex] ===
-                                "Image URL"
-                                ? "imageUrl"
-                                : "text"
-                            )
-                          }
-                        />
                       )}
                     </div>
                   )

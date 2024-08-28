@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 const UrlOverlay = ({
   questionText,
@@ -11,32 +11,38 @@ const UrlOverlay = ({
   onSubmit,
 }) => {
   const [timeLeft, setTimeLeft] = useState(timer);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const intervalRef = useRef(null);
   const isLastQuestion = currentQuestionNumber === totalQuestions;
 
   useEffect(() => {
-    // Reset the timer only if it's greater than 0 and the timer value has changed
+    // Reset the timer when a new question is loaded
+    setTimeLeft(timer);
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
     if (timer > 0) {
-      setTimeLeft(timer); // Initialize the timer with the new value
-      const id = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
-            clearInterval(id);
-            if (onNext) onNext(); // Automatically move to the next question when timer runs out
+            clearInterval(intervalRef.current);
+            onNext();
             return 0;
           }
           return prevTime - 1;
         });
       }, 1000);
-
-      // Cleanup function to clear the interval on component unmount or when timer changes
-      return () => clearInterval(id);
     }
-  }, [timer, onNext]);
 
-  // Effect to handle updates when question changes
-  useEffect(() => {
-    setTimeLeft(timer); // Reset timer when question changes
-  }, [timer, currentQuestionNumber]);
+    return () => clearInterval(intervalRef.current); // Cleanup the interval on unmount or when the question changes
+  }, [currentQuestionNumber]);
+
+  const handleOptionClick = (optionId) => {
+    setSelectedOptionId(optionId);
+    onOptionClick(optionId);
+  };
 
   return (
     <div className="question-overlay">
@@ -52,9 +58,9 @@ const UrlOverlay = ({
           <div
             key={option._id}
             className={`url-option-holder ${
-              option.selected ? "game-selected" : ""
+              option._id === selectedOptionId ? "game-selected" : ""
             }`}
-            onClick={() => onOptionClick(option._id)}
+            onClick={() => handleOptionClick(option._id)}
           >
             <img
               src={option.imageURL || "https://picsum.photos/400/500"}

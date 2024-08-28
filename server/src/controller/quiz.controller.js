@@ -165,7 +165,7 @@ const updateQuiz = async (req, res) => {
 
     // Update each question
     for (const questionData of questions) {
-      const { questionId, questionText, options } = questionData;
+      const { questionId, questionText, options, timer } = questionData;
 
       // Find the existing question
       const questionObject = await Question.findById(questionId);
@@ -182,6 +182,9 @@ const updateQuiz = async (req, res) => {
       // Update the question text if provided
       if (questionText !== undefined) {
         questionObject.questionText = questionText;
+      }
+      if (timer !== undefined) {
+        questionObject.timer = timer;
       }
 
       // Update each option

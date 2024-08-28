@@ -74,9 +74,13 @@
   padding: 2rem;
   border-radius: 1rem;
   cursor: pointer;
+  box-sizing: border-box;
+  padding: 1.8rem;
+  border: 4px solid transparent
 }
 
 .game-selected {
+  box-sizing: border-box;
   border: 4px solid #5076FF;
 }
 

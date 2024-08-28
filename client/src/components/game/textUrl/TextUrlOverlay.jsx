@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 const TextUrlOverlay = ({
   questionText, // Added to display question text
@@ -11,28 +11,38 @@ const TextUrlOverlay = ({
   onSubmit,
 }) => {
   const [timeLeft, setTimeLeft] = useState(timer);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const intervalRef = useRef(null);
   const isLastQuestion = currentQuestionNumber === totalQuestions;
 
   useEffect(() => {
+    // Reset the timer when a new question is loaded
+    setTimeLeft(timer);
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
     if (timer > 0) {
-      setTimeLeft(timer);
-      const id = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
-            clearInterval(id);
-            if (onNext) onNext(); // Automatically move to the next question when timer runs out
+            clearInterval(intervalRef.current);
+            onNext();
             return 0;
           }
           return prevTime - 1;
         });
       }, 1000);
-      return () => clearInterval(id); // Cleanup on component unmount or when timer changes
     }
-  }, [timer, onNext]);
 
-  useEffect(() => {
-    setTimeLeft(timer); // Reset timeLeft when timer changes
-  }, [timer]);
+    return () => clearInterval(intervalRef.current); // Cleanup the interval on unmount or when the question changes
+  }, [currentQuestionNumber]);
+
+  const handleOptionClick = (optionId) => {
+    setSelectedOptionId(optionId);
+    onOptionClick(optionId);
+  };
 
   return (
     <div className="question-overlay">
@@ -50,9 +60,9 @@ const TextUrlOverlay = ({
           <div
             key={option._id}
             className={`texturl-option-holder ${
-              option.selected ? "game-selected" : ""
+              option._id === selectedOptionId ? "game-selected" : ""
             }`}
-            onClick={() => onOptionClick(option._id)}
+            onClick={() => handleOptionClick(option._id)}
           >
             <div className="text-url-text">{option.optionText}</div>
             <div className="texturl-image">
