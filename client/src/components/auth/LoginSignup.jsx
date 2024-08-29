@@ -26,12 +26,15 @@ const LoginSignup = () => {
 
   const onSignup = async (data) => {
     try {
-      const response = await axios.post("/api/user/signup", {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-      });
+      const response = await axios.post(
+        "https://quizcraft-gl9v.onrender.com/api/v1/user/signup",
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+        }
+      );
       console.log(response.data);
 
       if (response.status === 201) {
@@ -48,10 +51,13 @@ const LoginSignup = () => {
   const onLogin = async (data) => {
     try {
       setLoadingState(true);
-      const response = await axios.post("/api/user/login", {
-        email: data.email,
-        password: data.password,
-      });
+      const response = await axios.post(
+        "https://quizcraft-gl9v.onrender.com/api/v1/user/login",
+        {
+          email: data.email,
+          password: data.password,
+        }
+      );
       console.log(response.data.data.accessToken);
       console.log(response);
 
