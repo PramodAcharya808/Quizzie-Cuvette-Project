@@ -174,7 +174,10 @@ const PollDetails = ({
 
     try {
       setLoadingState(true);
-      const response = await axios.post("/api/quiz/create", quizData);
+      const response = await axios.post(
+        "https://quizcraft-gl9v.onrender.com/api/v1/quiz/create",
+        quizData
+      );
       console.log(response);
       setQuizLink(response.data.data.quizLink);
       setLoadingState(false);

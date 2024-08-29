@@ -35,9 +35,11 @@ const Dashboard = () => {
       const totalquiz = await axios.get(
         "https://quizcraft-gl9v.onrender.com/api/v1/analytics/totalQuiz"
       );
-      const totalquestions = await axios.get("/api/analytics/totalquestions");
+      const totalquestions = await axios.get(
+        "https://quizcraft-gl9v.onrender.com/api/v1/analytics/totalquestions"
+      );
       const totalimpressions = await axios.get(
-        "/api/analytics/totalimpressions"
+        "https://quizcraft-gl9v.onrender.com/api/v1/analytics/totalimpressions"
       );
       const quiz = formatNumber(totalquiz.data.data);
       const questions = formatNumber(totalquestions.data.data);

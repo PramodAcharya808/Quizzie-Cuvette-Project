@@ -35,7 +35,9 @@ const PollDetails = ({
     async function fetchQuizData() {
       try {
         setLoadingState(true);
-        const response = await axios.get(`/api/quiz/view/${quizId}`);
+        const response = await axios.get(
+          `https://quizcraft-gl9v.onrender.com/api/v1/quiz/view/${quizId}`
+        );
         const quizData = response.data.data;
         setLoadingState(false);
 
@@ -142,7 +144,7 @@ const PollDetails = ({
     try {
       setLoadingState(true);
       const response = await axios.patch(
-        `/api/quiz/update/${quizId}`,
+        `https://quizcraft-gl9v.onrender.com/api/v1/quiz/update/${quizId}`,
         updatedQuizData
       );
       setQuizLink(response.data.data.quizLink);
