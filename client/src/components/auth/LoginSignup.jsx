@@ -62,6 +62,8 @@ const LoginSignup = () => {
         console.log(response.data.data);
 
         login(response.data.data);
+        console.log(response.data.data.loginUserObject.refreshToken);
+
         navigate("/dashboard");
       } else if (response.data.data.status > 400) {
         if (response.data.data.status == 404) {

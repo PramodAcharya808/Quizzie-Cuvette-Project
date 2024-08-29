@@ -20,7 +20,10 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post("http://localhost:8000/api/v1/user/logout");
+      await axios.post(
+        "https://quizcraft-gl9v.onrender.com/api/v1/user/logout"
+      );
+      // await axios.post("http://localhost:8000/api/v1/user/logout");
       document.cookie =
         "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       document.cookie =

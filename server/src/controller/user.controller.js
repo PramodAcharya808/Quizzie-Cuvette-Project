@@ -120,9 +120,7 @@ const userLogin = async (req, res) => {
       secure: process.env.ENVIRONMENT === "production" ? true : false,
     };
 
-    const loginUserObject = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
+    const loginUserObject = await User.findById(user._id).select("-password");
 
     return res
       .status(200)
