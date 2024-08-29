@@ -52,12 +52,14 @@ const LoginSignup = () => {
     try {
       setLoadingState(true);
       const response = await axios.post(
-        "https://quizcraft-gl9v.onrender.comhttps://quizcraft-gl9v.onrender.com/api/v1/v1/user/login",
+        "https://quizcraft-gl9v.onrender.com/api/v1/user/login",
         {
           // const response = await axios.post("https://quizcraft-gl9v.onrender.com/api/v1/user/login", {
           email: data.email,
           password: data.password,
-        }
+        },
+        {},
+        { withCredentials: true }
       );
       console.log(response.data.data.accessToken);
       console.log(response);
