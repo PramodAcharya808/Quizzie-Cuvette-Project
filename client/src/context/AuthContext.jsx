@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = (token) => {
     document.cookie = `accessToken=${token.accessToken}; path=/`;
-    document.cookie = `refreshToken=${token.refreshToken}; path=/`;
+    document.cookie = `refreshToken=${token.loginUserObject.refreshToken}; path=/`;
     setLoggedIn(true);
   };
 
