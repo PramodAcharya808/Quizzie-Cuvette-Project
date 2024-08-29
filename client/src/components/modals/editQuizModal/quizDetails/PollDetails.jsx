@@ -4,6 +4,8 @@ import axios from "axios";
 import "./PollDetails.css";
 import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
 import toastr from "toastr";
+import { useAuth } from "../../../../context/AuthContext";
+import Loader from "./../../../loader/Loader";
 
 const PollDetails = ({
   setShow,
@@ -27,13 +29,15 @@ const PollDetails = ({
   const [selectedOptionTypes, setSelectedOptionTypes] = useState([]);
   const [created, setCreated] = useState(false);
   const [quizLink, setQuizLink] = useState("");
-
+  const { loading, setLoadingState } = useAuth();
   // Fetching poll data
   useEffect(() => {
     async function fetchQuizData() {
       try {
+        setLoadingState(true);
         const response = await axios.get(`/api/quiz/view/${quizId}`);
         const quizData = response.data.data;
+        setLoadingState(false);
 
         // Populate state with quiz data
         setQuestions(
@@ -136,11 +140,13 @@ const PollDetails = ({
     };
 
     try {
+      setLoadingState(true);
       const response = await axios.patch(
         `/api/quiz/update/${quizId}`,
         updatedQuizData
       );
       setQuizLink(response.data.data.quizLink);
+      setLoadingState(false);
       toastr.success("Poll updated successfully!");
       setCreated(true);
     } catch (error) {
@@ -155,6 +161,7 @@ const PollDetails = ({
 
   return (
     <>
+      {loading && <Loader />}
       {!created ? (
         <div className="poll-form">
           <div className="question-tabs">

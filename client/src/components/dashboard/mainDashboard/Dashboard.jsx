@@ -8,9 +8,10 @@ import axios from "axios";
 import TrendingQuiz from "./trendingQuiz/TrendingQuiz";
 import CountUp from "react-countup";
 import CreateQuizModal from "../../modals/createQuizModal/quizNameType/CreateQuizModal";
+import Loader from "../../loader/Loader";
 
 const Dashboard = () => {
-  const { logout } = useAuth();
+  const { logout, loading, setLoadingState } = useAuth();
   const url = useLocation();
 
   const [totalQuiz, setTotalquiz] = useState();
@@ -30,6 +31,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     async function getData() {
+      setLoadingState(true);
       const totalquiz = await axios.get("/api/analytics/totalQuiz");
       const totalquestions = await axios.get("/api/analytics/totalquestions");
       const totalimpressions = await axios.get(
@@ -41,12 +43,14 @@ const Dashboard = () => {
       setTotalquiz(quiz);
       setTotalquestions(questions);
       setTotalimpressions(impressions);
+      setLoadingState(false);
     }
     getData();
   }, []);
 
   return (
     <>
+      {loading && <Loader />}
       <div className="main-container">
         <div className="left-section  box-shadow-3 bg-secondary">
           <div className="inner-group-1">

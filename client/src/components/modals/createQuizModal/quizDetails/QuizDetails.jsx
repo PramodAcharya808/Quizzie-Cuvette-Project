@@ -4,6 +4,8 @@ import { Delete } from "../../../Icons/CustomIcons";
 import axios from "axios";
 import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
 import toastr from "toastr";
+import { useAuth } from "../../../../context/AuthContext";
+import Loader from "./../../../loader/Loader";
 
 const QuizDetails = ({
   setShow,
@@ -21,6 +23,7 @@ const QuizDetails = ({
     setSelectedType(null);
   };
 
+  const { loading, setLoadingState } = useAuth();
   const [questions, setQuestions] = useState([
     {
       text: "",
@@ -185,8 +188,10 @@ const QuizDetails = ({
     };
 
     try {
+      setLoadingState(true);
       const response = await axios.post("/api/quiz/create", quizData);
       setQuizLink(response.data.data.quizLink);
+      setLoadingState(false);
       toastr.success("Quiz created successfully!");
       setCreated(true);
     } catch (error) {
@@ -197,6 +202,7 @@ const QuizDetails = ({
 
   return (
     <>
+      {loading && <Loader />}
       {!created ? (
         <div className="poll-form">
           <div className="question-tabs">

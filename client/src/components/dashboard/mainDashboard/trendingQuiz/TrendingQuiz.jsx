@@ -8,15 +8,17 @@ import { useAuth } from "../../../../context/AuthContext";
 
 const TrendingQuiz = () => {
   const [trendingQuiz, setTrendingQuiz] = useState([]);
-  const { loading } = useAuth();
+  const { loading, setLoadingState } = useAuth();
   useEffect(() => {
     async function fecthTrending() {
+      setLoadingState(true);
       try {
         const trendingQuizList = await axios.get("/api/analytics/trendingquiz");
         setTrendingQuiz(trendingQuizList.data);
       } catch (error) {
         console.error("Error fetching trending quizzes:", error);
       }
+      setLoadingState(false);
     }
     fecthTrending();
   }, []);

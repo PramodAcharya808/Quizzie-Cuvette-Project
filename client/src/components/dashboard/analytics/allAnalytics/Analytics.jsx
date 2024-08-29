@@ -7,13 +7,16 @@ import { format, parseISO } from "date-fns";
 import DeleteModal from "../../../modals/deleteModal/DeleteModal";
 import UpdateQuizModal from "../../../modals/editQuizModal/quizNameType/UpdateQuizModal";
 import toastr from "toastr";
+import { useAuth } from "../../../../context/AuthContext";
 // import "toastr/build/toastr.min.css";
+import Loader from "./../../../loader/Loader";
 
 function Analytics() {
   const [allQuizList, setAllQuizList] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedQuizId, setSelectedQuizId] = useState(null);
+  const { loading, setLoadingState } = useAuth();
 
   const handleDeleteClick = (quizId) => {
     setSelectedQuizId(quizId);
@@ -25,15 +28,18 @@ function Analytics() {
   };
 
   const handleConfirmDelete = async () => {
+    setLoadingState(true);
     try {
       await axios.delete(`/api/quiz/delete/${selectedQuizId}`);
       const updatedQuizzes = await axios.get("/api/quiz/getAllQuiz");
       setAllQuizList(updatedQuizzes.data.data);
+      setLoadingState(false);
+      setShowModal(false);
       toastr.success("Quiz deleted successfully");
     } catch (error) {
       console.log(error);
     }
-    setShowModal(false);
+    setShowUpdateModal(false);
   };
 
   const handleShare = (quizLink) => {
@@ -67,8 +73,10 @@ function Analytics() {
 
   useEffect(() => {
     async function fetchAllQuiz() {
+      setLoadingState(true);
       const response = await axios.get("/api/quiz/getAllQuiz");
       setAllQuizList(response.data.data);
+      setLoadingState(false);
     }
     fetchAllQuiz();
   }, []);
@@ -77,6 +85,7 @@ function Analytics() {
 
   return (
     <>
+      {loading && <Loader />}
       <div className="analytics-container">
         <div className="analytics-top-container">
           <h1 className="analytics-heading">Quiz Analysis</h1>
@@ -149,6 +158,7 @@ function Analytics() {
           onClose={handleCloseModal}
           onConfirm={handleConfirmDelete}
           quizId={selectedQuizId}
+          loading={loading}
         />
       )}
       {showUpdateModal && (

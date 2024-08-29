@@ -5,8 +5,11 @@ import { Navigate, useParams } from "react-router-dom";
 import CountUp from "react-countup";
 import { format, parseISO } from "date-fns";
 import QuestionCard from "./questionCard/QuestionCard";
+import { useAuth } from "../../../../context/AuthContext";
+import Loader from "./../../../loader/Loader";
 
 const QuestionAnalytics = () => {
+  const { loading, setLoadingState } = useAuth();
   const [quizDetails, setQuizDetails] = useState({
     totalImpressions: 0,
     createdAt: "",
@@ -25,6 +28,7 @@ const QuestionAnalytics = () => {
   useEffect(() => {
     async function getQuestion() {
       try {
+        setLoadingState(true);
         const response = await axios.get(
           `/api/analytics/getquestionwiseanalytics/${quizId}`
         );
@@ -37,6 +41,7 @@ const QuestionAnalytics = () => {
         } else {
           console.error("Unexpected response structure:", response.data);
         }
+        setLoadingState(false);
       } catch (error) {
         if (error.response && error.response.status === 403) {
           setRedirectToDashboard(true);
@@ -59,42 +64,45 @@ const QuestionAnalytics = () => {
   }
 
   return (
-    <div className="question-analysis-container">
-      <div className="question-info">
-        <div className="quiz-question-name">
-          <h1>{quizDetails.quizName} Question Analysis</h1>
-        </div>
-        <div className="quiz-meta-data">
-          <h2>Created on : {formatDate(quizDetails.createdAt)}</h2>
-          <h2>
-            Impressions :{" "}
-            <CountUp
-              start={0}
-              end={quizDetails.totalImpressions}
-              duration={2}
-            />
-          </h2>
-        </div>
-      </div>
-      <div className="questions-container">
-        <div className="question-inner-container">
-          {quizDetails.questions && quizDetails.questions.length > 0 ? (
-            quizDetails.questions.map((question, index) => (
-              <QuestionCard
-                key={index}
-                index={index + 1}
-                questionText={question.questionText}
-                totalAnswered={question.totalAnswered}
-                totalCorrect={question.totalCorrect}
-                totalWrong={question.totalWrong}
+    <>
+      {loading && <Loader />}
+      <div className="question-analysis-container">
+        <div className="question-info">
+          <div className="quiz-question-name">
+            <h1>{quizDetails.quizName} Question Analysis</h1>
+          </div>
+          <div className="quiz-meta-data">
+            <h2>Created on : {formatDate(quizDetails.createdAt)}</h2>
+            <h2>
+              Impressions :{" "}
+              <CountUp
+                start={0}
+                end={quizDetails.totalImpressions}
+                duration={2}
               />
-            ))
-          ) : (
-            <p>No questions available</p>
-          )}
+            </h2>
+          </div>
+        </div>
+        <div className="questions-container">
+          <div className="question-inner-container">
+            {quizDetails.questions && quizDetails.questions.length > 0 ? (
+              quizDetails.questions.map((question, index) => (
+                <QuestionCard
+                  key={index}
+                  index={index + 1}
+                  questionText={question.questionText}
+                  totalAnswered={question.totalAnswered}
+                  totalCorrect={question.totalCorrect}
+                  totalWrong={question.totalWrong}
+                />
+              ))
+            ) : (
+              <p>No questions available</p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

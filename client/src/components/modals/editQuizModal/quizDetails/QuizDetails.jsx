@@ -4,6 +4,8 @@ import toastr from "toastr";
 import { Delete } from "../../../Icons/CustomIcons";
 import axios from "axios";
 import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
+import { useAuth } from "../../../../context/AuthContext";
+import Loader from "./../../../loader/Loader";
 
 const QuizDetails = ({
   setShow,
@@ -22,6 +24,7 @@ const QuizDetails = ({
     setSelectedType(null);
   };
 
+  const { loading, setLoadingState } = useAuth();
   const [questions, setQuestions] = useState([]);
   const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
   const [selectedOptionTypes, setSelectedOptionTypes] = useState([]);
@@ -34,8 +37,10 @@ const QuizDetails = ({
   useEffect(() => {
     async function fetchQuizData() {
       try {
+        setLoadingState(true);
         const response = await axios.get(`/api/quiz/view/${quizId}`);
         const quizData = response.data.data;
+        setLoadingState(false);
 
         // Populate state with quiz data, including IDs
         setQuestions(
@@ -167,6 +172,7 @@ const QuizDetails = ({
     };
 
     try {
+      setLoadingState(true);
       const response = await axios.patch(
         `/api/quiz/update/${quizId}`,
         updatedQuizData
@@ -174,6 +180,7 @@ const QuizDetails = ({
       console.log(response);
 
       setQuizLink(response.data.data.quizLink);
+      setLoadingState(false);
       toastr.success("Quiz updated successfully!");
       setCreated(true);
     } catch (error) {
@@ -203,6 +210,7 @@ const QuizDetails = ({
 
   return (
     <>
+      {loading && <Loader />}
       {!created ? (
         <div className="poll-form">
           <div className="question-tabs">

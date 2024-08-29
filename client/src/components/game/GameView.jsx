@@ -9,6 +9,7 @@ import QnaResult from "./result/QnaResult";
 import PollResult from "./result/PollResult";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import Loader from "./../loader/Loader";
 
 const GameView = () => {
   const { quizLink } = useParams();
@@ -17,7 +18,7 @@ const GameView = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [results, setResults] = useState(null); // New state to store results
+  const [results, setResults] = useState(null);
 
   // Retrieve sessionId from local storage or create a new one
   const sessionId = localStorage.getItem("sessionId") || uuidv4();
@@ -95,6 +96,7 @@ const GameView = () => {
     try {
       const response = await axios.post("/api/public/quiz/start/", answerData);
       const { totalCorrect, totalQuestions } = response.data.data;
+      setQuizCompleted(true);
       setResults({ totalCorrect, totalQuestions }); // Store the results
       setQuizCompleted(true);
       localStorage.removeItem("sessionId"); // Clear sessionId on submit
@@ -122,10 +124,10 @@ const GameView = () => {
   }
 
   if (isSubmitting) {
-    return <div>Submitting answers...</div>;
+    return <Loader />;
   }
 
-  if (!quizData) return <div>Loading...</div>;
+  if (!quizData) return <Loader />;
 
   const question = quizData.questions[currentQuestionIndex];
   const totalQuestions = quizData.questions.length;

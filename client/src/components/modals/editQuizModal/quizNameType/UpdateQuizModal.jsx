@@ -4,16 +4,19 @@ import { useForm } from "react-hook-form";
 import QuizDetails from "../quizDetails/QuizDetails";
 import PollDetails from "../quizDetails/PollDetails";
 import axios from "axios";
+import { useAuth } from "../../../../context/AuthContext";
+import Loader from "./../../../loader/Loader";
 
 const UpdateQuizModal = ({ show, setShow, quizId }) => {
   const [selectedType, setSelectedType] = useState(null);
   const [next, setNext] = useState(false);
   const [quizInfo, setQuizInfo] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchQuiz() {
       try {
+        setLoading(true);
         const response = await axios.get(`/api/quiz/view/${quizId}`);
         const quizData = response.data.data;
         setQuizInfo({
@@ -47,7 +50,7 @@ const UpdateQuizModal = ({ show, setShow, quizId }) => {
     setShow(false);
   }, [reset, setShow]);
 
-  if (!show || loading) return null;
+  if (!show || loading) return <Loader />;
 
   return (
     <div className="create-quiz-overlay">

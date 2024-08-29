@@ -4,7 +4,9 @@ import toastr from "toastr";
 import { Delete } from "../../../Icons/CustomIcons";
 import axios from "axios";
 import "./PollDetails.css";
+import { useAuth } from "../../../../context/AuthContext";
 import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
+import Loader from "./../../../loader/Loader";
 
 const PollDetails = ({
   setShow,
@@ -21,7 +23,7 @@ const PollDetails = ({
     setQuizInfo({});
     setSelectedType(null);
   };
-
+  const { loading, setLoadingState } = useAuth();
   const [questions, setQuestions] = useState([
     {
       text: "",
@@ -171,9 +173,11 @@ const PollDetails = ({
     console.log(quizData);
 
     try {
+      setLoadingState(true);
       const response = await axios.post("/api/quiz/create", quizData);
       console.log(response);
       setQuizLink(response.data.data.quizLink);
+      setLoadingState(false);
       toastr.success("Poll created successfully!");
       setCreated(true);
     } catch (error) {
@@ -184,6 +188,7 @@ const PollDetails = ({
 
   return (
     <>
+      {loading && <Loader />}
       {!created ? (
         <div className="poll-form">
           <div className="question-tabs">

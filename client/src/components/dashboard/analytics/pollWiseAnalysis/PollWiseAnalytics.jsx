@@ -5,8 +5,11 @@ import CountUp from "react-countup";
 import { format, parseISO } from "date-fns";
 import PollCard from "./pollCard/PollCard";
 import "./PollWiseAnalytics.css";
+import { useAuth } from "../../../../context/AuthContext";
+import Loader from "./../../../loader/Loader";
 
 const PollWiseAnalytics = () => {
+  const { loading, setLoadingState } = useAuth();
   const [quizDetails, setQuizDetails] = useState({
     totalImpressions: 0,
     createdAt: "",
@@ -39,12 +42,14 @@ const PollWiseAnalytics = () => {
 
   useEffect(() => {
     async function getPoll() {
+      setLoadingState(true);
       const response = await axios.get(
         `/api/analytics/getpollanalytics/${quizId}`
       );
       if (response.data.data) {
         setQuizDetails(response.data.data);
       }
+      setLoadingState(false);
     }
     getPoll();
   }, [quizId]);
@@ -55,37 +60,40 @@ const PollWiseAnalytics = () => {
   // });
 
   return (
-    <div className="poll-analysis-container">
-      <div className="poll-info">
-        <div className="poll-question-name">
-          <h1>{quizDetails.quizName} Question Analysis</h1>
+    <>
+      {loading && <Loader />}
+      <div className="poll-analysis-container">
+        <div className="poll-info">
+          <div className="poll-question-name">
+            <h1>{quizDetails.quizName} Question Analysis</h1>
+          </div>
+          <div className="poll-meta-data">
+            <h2>Created on : {formatDate(quizDetails.createdAt)}</h2>
+            <h2>
+              Impressions :{" "}
+              <CountUp
+                start={0}
+                end={quizDetails.totalImpressions}
+                duration={2}
+              />
+            </h2>
+          </div>
         </div>
-        <div className="poll-meta-data">
-          <h2>Created on : {formatDate(quizDetails.createdAt)}</h2>
-          <h2>
-            Impressions :{" "}
-            <CountUp
-              start={0}
-              end={quizDetails.totalImpressions}
-              duration={2}
-            />
-          </h2>
+        <div className="poll-container">
+          <div className="poll-inner-container">
+            {quizDetails.questions.map((question, index) => (
+              <PollCard
+                key={index}
+                index={index + 1}
+                questionText={question.questionText}
+                options={question.options}
+              />
+            ))}
+          </div>
+          ;
         </div>
       </div>
-      <div className="poll-container">
-        <div className="poll-inner-container">
-          {quizDetails.questions.map((question, index) => (
-            <PollCard
-              key={index}
-              index={index + 1}
-              questionText={question.questionText}
-              options={question.options}
-            />
-          ))}
-        </div>
-        ;
-      </div>
-    </div>
+    </>
   );
 };
 
