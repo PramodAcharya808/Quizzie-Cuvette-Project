@@ -74,7 +74,9 @@ function Analytics() {
   useEffect(() => {
     async function fetchAllQuiz() {
       setLoadingState(true);
-      const response = await axios.get("/api/quiz/getAllQuiz");
+      const response = await axios.get(
+        "https://quizcraft-gl9v.onrender.com/api/v1/quiz/getAllQuiz"
+      );
       setAllQuizList(response.data.data);
       setLoadingState(false);
     }

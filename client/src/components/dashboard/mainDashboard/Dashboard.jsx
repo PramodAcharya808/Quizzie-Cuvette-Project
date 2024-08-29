@@ -32,7 +32,9 @@ const Dashboard = () => {
   useEffect(() => {
     async function getData() {
       setLoadingState(true);
-      const totalquiz = await axios.get("/api/analytics/totalQuiz");
+      const totalquiz = await axios.get(
+        "https://quizcraft-gl9v.onrender.com/api/v1/analytics/totalQuiz"
+      );
       const totalquestions = await axios.get("/api/analytics/totalquestions");
       const totalimpressions = await axios.get(
         "/api/analytics/totalimpressions"
