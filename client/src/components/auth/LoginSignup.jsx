@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import "./LoginSignup.css";
 import "../../styles/global.style.css";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
 import Loader from "../loader/Loader";
+import toastr from "toastr";
 
 const LoginSignup = () => {
   const [isActive, setActive] = useState("signup");
@@ -35,13 +35,13 @@ const LoginSignup = () => {
       console.log(response.data);
 
       if (response.status === 201) {
-        toast.success("Account created!");
+        toastr.success("Account created!");
       } else if (response.data.statusCode === 500) {
-        toast.warn("Email already exists!");
+        toastr.error("Email already exists!");
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toastr.error(error.message);
     }
   };
 
@@ -58,23 +58,23 @@ const LoginSignup = () => {
       setLoadingState(false);
 
       if (response.data.status === 200) {
-        toast.success("Login successful!");
+        toastr.success("Login successful!");
         console.log(response.data.data);
 
         login(response.data.data);
         navigate("/dashboard");
       } else if (response.data.data.status > 400) {
         if (response.data.data.status == 404) {
-          toast.error(response.data.data.message);
+          toastr.error(response.data.data.message);
         }
         if (response.data.data.status === 401) {
-          toast.error(response.data.data.message);
+          toastr.error(response.data.data.message);
         }
       }
     } catch (error) {
-      toast.error(
-        "Login failed: " + error.response?.data?.message || error.message
-      );
+      // console.error(
+      //   "Login failed: " + error.response?.data?.message || error.message
+      // );
     }
   };
 
@@ -108,17 +108,6 @@ const LoginSignup = () => {
 
         {isActive === "signup" && (
           <>
-            <ToastContainer
-              position="top-right"
-              autoClose={1000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-            />
             <form onSubmit={handleSubmit(onSignup)} className="signup-form">
               <div className="input-group">
                 <div className="input-field">
@@ -200,17 +189,6 @@ const LoginSignup = () => {
 
         {isActive === "login" && (
           <>
-            <ToastContainer
-              position="top-right"
-              autoClose={1000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-            />
             {loading && <Loader />}
             <form onSubmit={handleSubmit(onLogin)} className="signup-form">
               <div className="input-group">

@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { Delete, Edit, Share } from "./../../../Icons/CustomIcons";
 import axios from "axios";
 import { format, parseISO } from "date-fns";
-import { toast, ToastContainer } from "react-toastify";
 import DeleteModal from "../../../modals/deleteModal/DeleteModal";
 import UpdateQuizModal from "../../../modals/editQuizModal/quizNameType/UpdateQuizModal";
+import toastr from "toastr";
+// import "toastr/build/toastr.min.css";
 
 function Analytics() {
   const [allQuizList, setAllQuizList] = useState([]);
@@ -14,7 +15,8 @@ function Analytics() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedQuizId, setSelectedQuizId] = useState(null);
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (quizId) => {
+    setSelectedQuizId(quizId);
     setShowModal(true);
   };
 
@@ -22,12 +24,12 @@ function Analytics() {
     setShowModal(false);
   };
 
-  const handleConfirmDelete = async (quizId) => {
+  const handleConfirmDelete = async () => {
     try {
-      await axios.delete(`/api/quiz/delete/${quizId}`);
+      await axios.delete(`/api/quiz/delete/${selectedQuizId}`);
       const updatedQuizzes = await axios.get("/api/quiz/getAllQuiz");
       setAllQuizList(updatedQuizzes.data.data);
-      toast.success("Quiz deleted successfully");
+      toastr.success("Quiz deleted successfully");
     } catch (error) {
       console.log(error);
     }
@@ -38,9 +40,9 @@ function Analytics() {
     const quizUrl = `http://localhost:5173/publicquiz/${quizLink}`;
     try {
       navigator.clipboard.writeText(quizUrl);
-      toast.success("Quiz link copied to clipboard");
+      toastr.success("Quiz link copied to clipboard");
     } catch (error) {
-      toast.error("Error. Cant copy to clipboard");
+      toastr.error("Error. Cant copy to clipboard");
     }
   };
 
@@ -75,17 +77,6 @@ function Analytics() {
 
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={1000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
       <div className="analytics-container">
         <div className="analytics-top-container">
           <h1 className="analytics-heading">Quiz Analysis</h1>
@@ -115,13 +106,13 @@ function Analytics() {
                   <td>
                     <button
                       className="action-button edit"
-                      onClick={() => handleEditClick(quiz._id)} // Pass the quiz ID
+                      onClick={() => handleEditClick(quiz._id)}
                     >
                       <Edit />
                     </button>
                     <button
                       className="action-button delete"
-                      onClick={() => handleDeleteClick()}
+                      onClick={() => handleDeleteClick(quiz._id)}
                     >
                       <Delete />
                     </button>
@@ -143,12 +134,6 @@ function Analytics() {
                       Question Wise Analysis
                     </Link>
                   </td>
-                  <DeleteModal
-                    show={showModal}
-                    onClose={handleCloseModal}
-                    onConfirm={handleConfirmDelete}
-                    quizId={quiz._id}
-                  />
                 </tr>
               ))}
             </tbody>
@@ -158,11 +143,21 @@ function Analytics() {
           )}
         </div>
       </div>
-      <UpdateQuizModal
-        show={showUpdateModal}
-        setShow={setShowUpdateModal}
-        quizId={selectedQuizId} // Pass the selected quiz ID to the modal
-      />
+      {showModal && (
+        <DeleteModal
+          show={showModal}
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmDelete}
+          quizId={selectedQuizId}
+        />
+      )}
+      {showUpdateModal && (
+        <UpdateQuizModal
+          show={showUpdateModal}
+          setShow={setShowUpdateModal}
+          quizId={selectedQuizId}
+        />
+      )}
     </>
   );
 }

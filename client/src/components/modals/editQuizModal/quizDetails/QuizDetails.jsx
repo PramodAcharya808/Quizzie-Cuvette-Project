@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./QuizDetails.css";
-import { toast, ToastContainer } from "react-toastify";
+import toastr from "toastr";
 import { Delete } from "../../../Icons/CustomIcons";
 import axios from "axios";
 import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
@@ -64,7 +64,7 @@ const QuizDetails = ({
         );
       } catch (error) {
         console.error("Error fetching quiz data", error);
-        toast.error("Failed to fetch quiz data");
+        toastr.error("Failed to fetch quiz data");
       }
     }
 
@@ -105,7 +105,7 @@ const QuizDetails = ({
   const validateForm = () => {
     for (let i = 0; i < questions.length; i++) {
       if (!questions[i].text.trim()) {
-        toast.error(`Question ${i + 1} is required.`);
+        toastr.error(`Question ${i + 1} is required.`);
         return false;
       }
 
@@ -114,14 +114,14 @@ const QuizDetails = ({
         const option = questions[i].options[j];
 
         if (optionType === "Text" && !option.text.trim()) {
-          toast.error(
+          toastr.error(
             `Text for Option ${j + 1} in Question ${i + 1} is required.`
           );
           return false;
         }
 
         if (optionType === "Image URL" && !option.imageURL.trim()) {
-          toast.error(
+          toastr.error(
             `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
           );
           return false;
@@ -129,13 +129,13 @@ const QuizDetails = ({
 
         if (optionType === "Text and Image URL") {
           if (!option.text.trim()) {
-            toast.error(
+            toastr.error(
               `Text for Option ${j + 1} in Question ${i + 1} is required.`
             );
             return false;
           }
           if (!option.imageURL.trim()) {
-            toast.error(
+            toastr.error(
               `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
             );
             return false;
@@ -174,14 +174,14 @@ const QuizDetails = ({
       console.log(response);
 
       setQuizLink(response.data.data.quizLink);
-      toast.success("Quiz updated successfully!");
+      toastr.success("Quiz updated successfully!");
       setCreated(true);
     } catch (error) {
       console.error("Error updating quiz", error);
       if (error.response && error.response.data) {
-        toast.error(`Error: ${error.response.data.message}`);
+        toastr.error(`Error: ${error.response.data.message}`);
       } else {
-        toast.error("Failed to update quiz. Please try again.");
+        toastr.error("Failed to update quiz. Please try again.");
       }
     }
   };
@@ -203,17 +203,6 @@ const QuizDetails = ({
 
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={1000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable
-        pauseOnHover={false}
-      />
       {!created ? (
         <div className="poll-form">
           <div className="question-tabs">

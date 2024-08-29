@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./QuizDetails.css";
-import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import "./PollDetails.css";
 import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
+import toastr from "toastr";
 
 const PollDetails = ({
   setShow,
@@ -52,7 +52,7 @@ const PollDetails = ({
         );
       } catch (error) {
         console.error("Error fetching poll data", error);
-        toast.error("Failed to fetch poll data");
+        toastr.error("Failed to fetch poll data");
       }
     }
 
@@ -75,7 +75,7 @@ const PollDetails = ({
   const validateForm = () => {
     for (let i = 0; i < questions.length; i++) {
       if (!questions[i].text.trim()) {
-        toast.error(`Question ${i + 1} is required.`);
+        toastr.error(`Question ${i + 1} is required.`);
         return false;
       }
       for (let j = 0; j < questions[i].options.length; j++) {
@@ -83,14 +83,14 @@ const PollDetails = ({
         const option = questions[i].options[j];
 
         if (optionType === "Text" && !option.text.trim()) {
-          toast.error(
+          toastr.error(
             `Text for Option ${j + 1} in Question ${i + 1} is required.`
           );
           return false;
         }
 
         if (optionType === "Image URL" && !option.imageUrl.trim()) {
-          toast.error(
+          toastr.error(
             `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
           );
           return false;
@@ -98,13 +98,13 @@ const PollDetails = ({
 
         if (optionType === "Text and Image URL") {
           if (!option.text.trim()) {
-            toast.error(
+            toastr.error(
               `Text for Option ${j + 1} in Question ${i + 1} is required.`
             );
             return false;
           }
           if (!option.imageUrl.trim()) {
-            toast.error(
+            toastr.error(
               `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
             );
             return false; // Ensure this return is within the condition
@@ -141,31 +141,20 @@ const PollDetails = ({
         updatedQuizData
       );
       setQuizLink(response.data.data.quizLink);
-      toast.success("Poll updated successfully!");
+      toastr.success("Poll updated successfully!");
       setCreated(true);
     } catch (error) {
       console.error("Error updating poll", error);
       if (error.response && error.response.data) {
-        toast.error(`Error: ${error.response.data.message}`);
+        toastr.error(`Error: ${error.response.data.message}`);
       } else {
-        toast.error("Failed to update poll. Please try again.");
+        toastr.error("Failed to update poll. Please try again.");
       }
     }
   };
 
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={1000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable
-        pauseOnHover={false}
-      />
       {!created ? (
         <div className="poll-form">
           <div className="question-tabs">

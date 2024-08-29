@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import "./CopyLinkModal.css";
-import { toast } from "react-toastify";
+import toastr from "toastr";
+
 const CopyLinkModal = ({
   created,
   setCreated,
@@ -17,7 +18,7 @@ const CopyLinkModal = ({
       navigator.clipboard.writeText(inputRef.current.value).then(
         () => {
           console.log("Copied to clipboard successfully!");
-          toast.success("Link copied to clipboard!");
+          toastr.success("Link copied to clipboard!");
         },
         (err) => {
           console.error("Failed to copy: ", err);

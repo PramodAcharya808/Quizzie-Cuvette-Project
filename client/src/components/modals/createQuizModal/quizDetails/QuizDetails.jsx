@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "./QuizDetails.css";
-import { toast, ToastContainer } from "react-toastify";
 import { Delete } from "../../../Icons/CustomIcons";
 import axios from "axios";
 import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
+import toastr from "toastr";
 
 const QuizDetails = ({
   setShow,
@@ -54,7 +54,7 @@ const QuizDetails = ({
       setQuestionTimers([...questionTimers, "OFF"]);
       setSelectedQuestionIndex(questions.length);
     } else {
-      toast.error("You can only add up to 5 questions.");
+      toastr.error("You can only add up to 5 questions.");
     }
   };
 
@@ -75,7 +75,7 @@ const QuizDetails = ({
       updatedQuestions[questionIndex].options.push({ text: "", imageURL: "" });
       setQuestions(updatedQuestions);
     } else {
-      toast.error("You can only add up to 4 options.");
+      toastr.error("You can only add up to 4 options.");
     }
   };
 
@@ -125,13 +125,13 @@ const QuizDetails = ({
 
   const validateForm = () => {
     if (!quizInfo.quizName || !quizInfo.quizType) {
-      toast.error("Quiz name and type are required.");
+      toastr.error("Quiz name and type are required.");
       return false;
     }
 
     for (let i = 0; i < questions.length; i++) {
       if (!questions[i].text) {
-        toast.error(`Question ${i + 1} is required.`);
+        toastr.error(`Question ${i + 1} is required.`);
         return false;
       }
       for (let j = 0; j < questions[i].options.length; j++) {
@@ -139,21 +139,21 @@ const QuizDetails = ({
           !questions[i].options[j].text &&
           selectedOptionTypes[i] !== "Image URL"
         ) {
-          toast.error(`Option ${j + 1} in Question ${i + 1} is required.`);
+          toastr.error(`Option ${j + 1} in Question ${i + 1} is required.`);
           return false;
         }
         if (
           selectedOptionTypes[i] !== "Text" &&
           !questions[i].options[j].imageURL
         ) {
-          toast.error(
+          toastr.error(
             `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
           );
           return false;
         }
       }
       if (correctAnswers[i] === null) {
-        toast.error(`Please select the correct answer for Question ${i + 1}.`);
+        toastr.error(`Please select the correct answer for Question ${i + 1}.`);
         return false;
       }
     }
@@ -187,27 +187,16 @@ const QuizDetails = ({
     try {
       const response = await axios.post("/api/quiz/create", quizData);
       setQuizLink(response.data.data.quizLink);
-      toast.success("Quiz created successfully!");
+      toastr.success("Quiz created successfully!");
       setCreated(true);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create quiz. Please try again.");
+      toastr.error("Failed to create quiz. Please try again.");
     }
   };
 
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable
-        pauseOnHover={false}
-      />
       {!created ? (
         <div className="poll-form">
           <div className="question-tabs">

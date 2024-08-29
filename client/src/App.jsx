@@ -8,8 +8,28 @@ import NotFound from "./components/404/NotFound ";
 import QuestionAnalytics from "./components/dashboard/analytics/questionWiseAnalytics/QuestionAnalytics";
 import PollWiseAnalytics from "./components/dashboard/analytics/pollWiseAnalysis/PollWiseAnalytics";
 import GameView from "./components/game/GameView";
+import "./App.css";
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 
 function App() {
+  toastr.options = {
+    closeButton: true,
+    debug: false,
+    newestOnTop: true,
+    progressBar: true,
+    positionClass: "toast-top-right",
+    preventDuplicates: false,
+    onclick: null,
+    showDuration: "300",
+    hideDuration: "1000",
+    timeOut: "3000",
+    extendedTimeOut: "1000",
+    showEasing: "swing",
+    hideEasing: "linear",
+    showMethod: "fadeIn",
+    hideMethod: "fadeOut",
+  };
   const { loggedIn } = useAuth();
   console.log("Authenticated: ", loggedIn);
   return (

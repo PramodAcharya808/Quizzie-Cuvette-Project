@@ -66,7 +66,7 @@
   grid-template-rows: repeat(2, 1fr);
   width: 80%;
   height: 100%;
-  background: #000;
+  /* background: #000; */
   row-gap: 3rem;
   column-gap: 15%;
   justify-content: center;
@@ -147,7 +147,7 @@
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
   width: 80%;
-  background: #000;
+  /* background: #000; */
   row-gap: 3rem;
   column-gap: 15%;
   justify-content: center;

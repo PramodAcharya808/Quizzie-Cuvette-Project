@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
 import { useAuth } from "../../../context/AuthContext";
-import { toast, ToastContainer } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -47,17 +47,6 @@ const Dashboard = () => {
 
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={1000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
       <div className="main-container">
         <div className="left-section  box-shadow-3 bg-secondary">
           <div className="inner-group-1">

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./QuizDetails.css";
-import { toast, ToastContainer } from "react-toastify";
+import toastr from "toastr";
 import { Delete } from "../../../Icons/CustomIcons";
 import axios from "axios";
 import "./PollDetails.css";
@@ -53,7 +53,7 @@ const PollDetails = ({
       setSelectedOptionTypes([...selectedOptionTypes, "Text"]);
       setSelectedQuestionIndex(questions.length);
     } else {
-      toast.error("You can only add up to 5 questions.");
+      toastr.error("You can only add up to 5 questions.");
     }
   };
 
@@ -73,7 +73,7 @@ const PollDetails = ({
       updatedQuestions[questionIndex].options.push({ text: "", imageUrl: "" });
       setQuestions(updatedQuestions);
     } else {
-      toast.error("You can only add up to 4 options.");
+      toastr.error("You can only add up to 4 options.");
     }
   };
 
@@ -117,13 +117,13 @@ const PollDetails = ({
 
   const validateForm = () => {
     if (!quizInfo.quizName || !quizInfo.quizType) {
-      toast.error("Quiz name and type are required.");
+      toastr.error("Quiz name and type are required.");
       return false;
     }
 
     for (let i = 0; i < questions.length; i++) {
       if (!questions[i].text) {
-        toast.error(`Question ${i + 1} is required.`);
+        toastr.error(`Question ${i + 1} is required.`);
         return false;
       }
       for (let j = 0; j < questions[i].options.length; j++) {
@@ -131,14 +131,14 @@ const PollDetails = ({
           !questions[i].options[j].text &&
           selectedOptionTypes[i] !== "Image URL"
         ) {
-          toast.error(`Option ${j + 1} in Question ${i + 1} is required.`);
+          toastr.error(`Option ${j + 1} in Question ${i + 1} is required.`);
           return false;
         }
         if (
           selectedOptionTypes[i] !== "Text" &&
           !questions[i].options[j].imageUrl
         ) {
-          toast.error(
+          toastr.error(
             `Image URL for Option ${j + 1} in Question ${i + 1} is required.`
           );
           return false;
@@ -174,27 +174,16 @@ const PollDetails = ({
       const response = await axios.post("/api/quiz/create", quizData);
       console.log(response);
       setQuizLink(response.data.data.quizLink);
-      toast.success("Poll created successfully!");
+      toastr.success("Poll created successfully!");
       setCreated(true);
     } catch (error) {
       console.log(error);
-      toast.error("Failed to create quiz. Please try again.");
+      toastr.error("Failed to create quiz. Please try again.");
     }
   };
 
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable
-        pauseOnHover={false}
-      />
       {!created ? (
         <div className="poll-form">
           <div className="question-tabs">
