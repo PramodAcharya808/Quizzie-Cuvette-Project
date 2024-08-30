@@ -17,7 +17,7 @@ const CopyLinkModal = ({
     if (inputRef.current) {
       navigator.clipboard.writeText(inputRef.current.value).then(
         () => {
-          console.log("Copied to clipboard successfully!");
+          // console.log("Copied to clipboard successfully!");
           toastr.success("Link copied to clipboard!");
         },
         (err) => {

@@ -67,13 +67,13 @@ const GameView = () => {
   const handleNext = useCallback(async () => {
     if (currentQuestionIndex + 1 === quizData.questions.length) {
       setIsSubmitting(true);
-      await handleSubmit(); // Ensure submission is handled
+      await handleSubmit(); 
     } else {
       const question = quizData.questions[currentQuestionIndex];
       const answerData = {
         quizId: quizData._id,
         questionId: question._id,
-        selectedOptionId: selectedOption || null, // Allow null if no option selected
+        selectedOptionId: selectedOption || null, 
         sessionId,
       };
 
@@ -94,7 +94,7 @@ const GameView = () => {
     const answerData = {
       quizId: quizData._id,
       questionId: question._id,
-      selectedOptionId: selectedOption || null, // Allow null if no option selected
+      selectedOptionId: selectedOption || null, 
       sessionId,
     };
 
@@ -104,13 +104,13 @@ const GameView = () => {
       const { totalCorrect, totalQuestions } = response.data.data;
       setLoadingState(false);
       setQuizCompleted(true);
-      setResults({ totalCorrect, totalQuestions }); // Store the results
+      setResults({ totalCorrect, totalQuestions });
       setQuizCompleted(true);
-      localStorage.removeItem("sessionId"); // Clear sessionId on submit
+      localStorage.removeItem("sessionId"); 
     } catch (error) {
       console.error(error);
     } finally {
-      setIsSubmitting(false); // Ensure isSubmitting is reset
+      setIsSubmitting(false); 
     }
   }, [currentQuestionIndex, quizData, selectedOption, sessionId]);
 

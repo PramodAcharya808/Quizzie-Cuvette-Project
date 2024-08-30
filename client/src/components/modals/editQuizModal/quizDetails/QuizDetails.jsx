@@ -178,7 +178,7 @@ const QuizDetails = ({
         `/quiz/update/${quizId}`,
         updatedQuizData
       );
-      console.log(response);
+      // console.log(response);
 
       setQuizLink(response.data.data.quizLink);
       setLoadingState(false);

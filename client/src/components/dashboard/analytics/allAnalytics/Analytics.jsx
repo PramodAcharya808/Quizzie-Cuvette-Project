@@ -76,7 +76,7 @@ function Analytics() {
     async function fetchAllQuiz() {
       setLoadingState(true);
       try {
-        const token = localStorage.getItem("token"); // Retrieve the token from localStorage
+        const token = localStorage.getItem("token");
         const response = await apiClient.get("/quiz/getAllQuiz");
         if (Array.isArray(response.data.data)) {
           setAllQuizList(response.data.data);
@@ -93,7 +93,7 @@ function Analytics() {
     fetchAllQuiz();
   }, []);
 
-  console.log(allQuizList);
+  // console.log(allQuizList);
 
   return (
     <>

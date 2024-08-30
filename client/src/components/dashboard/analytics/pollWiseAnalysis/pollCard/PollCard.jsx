@@ -2,8 +2,8 @@ import React from "react";
 import "./PollCard.css";
 
 const PollCard = ({ index, questionText, options }) => {
-  console.log(options);
-  options.map((data) => console.log(data.totalSelected));
+  // console.log(options);
+  // options.map((data) => console.log(data.totalSelected));
 
   return (
     <div className="question-card-container">

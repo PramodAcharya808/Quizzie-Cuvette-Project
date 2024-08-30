@@ -15,7 +15,7 @@ const PollDetails = ({
   quizInfo,
   setQuizInfo,
   setSelectedType,
-  quizId, // Added quizId prop to identify the quiz being edited
+  quizId,
 }) => {
   const handleCancel = () => {
     setShow(false);
@@ -125,7 +125,7 @@ const PollDetails = ({
       return;
     }
 
-    console.log(questions);
+    // console.log(questions);
 
     // Ensure that questionId and optionId are included
     const updatedQuizData = {

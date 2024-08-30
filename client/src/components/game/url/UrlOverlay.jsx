@@ -36,7 +36,7 @@ const UrlOverlay = ({
       }, 1000);
     }
 
-    return () => clearInterval(intervalRef.current); // Cleanup the interval on unmount or when the question changes
+    return () => clearInterval(intervalRef.current);
   }, [currentQuestionNumber]);
 
   const handleOptionClick = (optionId) => {

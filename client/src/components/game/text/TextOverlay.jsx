@@ -15,12 +15,12 @@ const TextOverlay = ({
   const intervalRef = useRef(null);
   const isLastQuestion = currentQuestionNumber === totalQuestions;
 
-  console.log("Full render");
+  // console.log("Full render");
 
   useEffect(() => {
     // Reset the timer when a new question is loaded
     setTimeLeft(timer);
-    console.log("Rendered inside useeffect");
+    // console.log("Rendered inside useeffect");
 
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -39,13 +39,13 @@ const TextOverlay = ({
       }, 1000);
     }
 
-    return () => clearInterval(intervalRef.current); // Cleanup the interval on unmount or when the question changes
+    return () => clearInterval(intervalRef.current);
   }, [currentQuestionNumber]);
 
   const handleOptionClick = (optionId) => {
     setSelectedOptionId(optionId);
     onOptionClick(optionId);
-    console.log("Rendered inside option clicked");
+    // console.log("Rendered inside option clicked");
   };
 
   return (

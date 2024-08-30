@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
 import Loader from "../loader/Loader";
 import toastr from "toastr";
-import { useNavigate } from "react-router-dom"; // Make sure to import useNavigate
+import { useNavigate } from "react-router-dom";
 
 const LoginSignup = () => {
   const [isActive, setActive] = useState("signup");
@@ -24,7 +24,7 @@ const LoginSignup = () => {
 
   const confirmPassword = watch("password");
   const { login, setLoadingState, loading } = useAuth();
-  const navigate = useNavigate(); // Use useNavigate to navigate after login
+  const navigate = useNavigate(); 
 
   const onSignup = async (data) => {
     try {
@@ -39,7 +39,7 @@ const LoginSignup = () => {
           confirmPassword: data.confirmPassword,
         }
       );
-      console.log(response.data);
+      // console.log(response.data);
       setLoadingState(false);
       if (response.status === 201) {
         toastr.success("Account created!");

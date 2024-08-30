@@ -171,12 +171,12 @@ const PollDetails = ({
       })),
     };
 
-    console.log(quizData);
+    // console.log(quizData);
 
     try {
       setLoadingState(true);
       const response = await apiClient.post("/quiz/create", quizData);
-      console.log(response);
+      // console.log(response);
       setQuizLink(response.data.data.quizLink);
       setLoadingState(false);
       toastr.success("Poll created successfully!");
@@ -406,7 +406,7 @@ const PollDetails = ({
             <button
               className="create-quiz-btn"
               onClick={handleCreateQuiz}
-              type="button" // Ensure this is a button, not a submit
+              type="button" 
             >
               Create Quiz
             </button>

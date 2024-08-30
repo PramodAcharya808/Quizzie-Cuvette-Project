@@ -178,7 +178,7 @@ const QuizDetails = ({
         optionType: selectedOptionTypes[index],
         options: question.options.map((option, optIndex) => ({
           optionText: option.text,
-          imageURL: option.imageURL, // Correctly store the imageURL field
+          imageURL: option.imageURL,
           isCorrect: correctAnswers[index] === optIndex,
         })),
         timer:
