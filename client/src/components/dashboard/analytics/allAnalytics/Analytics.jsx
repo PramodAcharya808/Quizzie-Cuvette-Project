@@ -44,7 +44,7 @@ function Analytics() {
   };
 
   const handleShare = (quizLink) => {
-    const quizUrl = `http://localhost:5173/publicquiz/${quizLink}`;
+    const quizUrl = `https://quizzie-cuvette-pramod.vercel.app/publicquiz/${quizLink}`;
     try {
       navigator.clipboard.writeText(quizUrl);
       toastr.success("Quiz link copied to clipboard");

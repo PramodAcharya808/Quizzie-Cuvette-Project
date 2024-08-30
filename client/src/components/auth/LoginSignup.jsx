@@ -60,26 +60,23 @@ const LoginSignup = () => {
           password: data.password,
         }
       );
-      console.log(response.data.data.accessToken);
 
       setLoadingState(false);
 
-      if (response.status === 200) {
+      // Check if the response indicates success
+      if (response.status === 200 && response.data?.data?.accessToken) {
         toastr.success("Login successful!");
-        login(response.data.data); // Pass the entire data object to the login function
+        login(response.data.data); // Store the valid token
         navigate("/dashboard"); // Redirect to the dashboard after successful login
-      } else if (response.data.data.status > 400) {
-        if (response.data.data.status == 404) {
-          toastr.error(response.data.data.message);
-        }
-        if (response.data.data.status === 401) {
-          toastr.error(response.data.data.message);
-        }
+      } else {
+        // Handle the case where the response status is not 200 or token is missing
+        toastr.error(response.data?.data?.message || "Login failed");
       }
     } catch (error) {
-      console.error(
-        "Login failed:",
-        error.response?.data?.message || error.message
+      setLoadingState(false);
+      // Handle errors that occur during the request
+      toastr.error(
+        error.response?.data?.data?.message || "An error occurred during login"
       );
     }
   };

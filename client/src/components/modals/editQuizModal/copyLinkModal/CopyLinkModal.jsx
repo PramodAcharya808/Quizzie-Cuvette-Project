@@ -37,7 +37,7 @@ const CopyLinkModal = ({
     window.location.reload();
   };
 
-  const quizUrl = `http://localhost:5173/publicquiz/${quizLink}`;
+  const quizUrl = `https://quizzie-cuvette-pramod.vercel.app/publicquiz/${quizLink}`;
 
   return (
     <div className="copy-quiz-link-container">
