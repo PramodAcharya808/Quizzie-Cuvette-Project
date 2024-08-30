@@ -10,6 +10,7 @@ import PollResult from "./result/PollResult";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Loader from "./../loader/Loader";
+import apiClient from "./../../utils/apiClient";
 
 const GameView = () => {
   const { quizLink } = useParams();
@@ -29,7 +30,7 @@ const GameView = () => {
   // Function to increase quiz impression
   const increaseImpression = useCallback(async (quizId) => {
     try {
-      await axios.post(`/api/analytics/increaseimpression/${quizId}`);
+      await apiClient.post(`/analytics/increaseimpression/${quizId}`);
     } catch (error) {
       console.error("Failed to increase quiz impression", error);
     }
@@ -38,7 +39,7 @@ const GameView = () => {
   useEffect(() => {
     async function getQuiz() {
       try {
-        const response = await axios.get(`/api/public/quiz/${quizLink}`);
+        const response = await apiClient.get(`/public/quiz/${quizLink}`);
         setQuizData(response.data.data);
 
         // Increase impression once when the quiz data is successfully fetched
@@ -75,7 +76,7 @@ const GameView = () => {
       };
 
       try {
-        await axios.post("/api/public/quiz/start/", answerData);
+        await apiClient.post("/public/quiz/start/", answerData);
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setSelectedOption(null);
       } catch (error) {
@@ -94,7 +95,7 @@ const GameView = () => {
     };
 
     try {
-      const response = await axios.post("/api/public/quiz/start/", answerData);
+      const response = await apiClient.post("/public/quiz/start/", answerData);
       const { totalCorrect, totalQuestions } = response.data.data;
       setQuizCompleted(true);
       setResults({ totalCorrect, totalQuestions }); // Store the results

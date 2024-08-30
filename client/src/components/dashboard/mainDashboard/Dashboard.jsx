@@ -4,11 +4,11 @@ import { useAuth } from "../../../context/AuthContext";
 
 import "react-toastify/dist/ReactToastify.css";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-import axios from "axios";
 import TrendingQuiz from "./trendingQuiz/TrendingQuiz";
 import CountUp from "react-countup";
 import CreateQuizModal from "../../modals/createQuizModal/quizNameType/CreateQuizModal";
 import Loader from "../../loader/Loader";
+import apiClient from "../../../utils/apiClient";
 
 const Dashboard = () => {
   const { logout, loading, setLoadingState } = useAuth();
@@ -32,18 +32,18 @@ const Dashboard = () => {
   useEffect(() => {
     async function getData() {
       setLoadingState(true);
-      const totalquiz = await axios.get(
-        "/api/analytics/totalQuiz",
+      const totalquiz = await apiClient.get(
+        "/analytics/totalQuiz",
         {},
         { withCredentials: true }
       );
-      const totalquestions = await axios.get(
-        "/api/analytics/totalquestions",
+      const totalquestions = await apiClient.get(
+        "/analytics/totalquestions",
         {},
         { withCredentials: true }
       );
-      const totalimpressions = await axios.get(
-        "/api/analytics/totalimpressions",
+      const totalimpressions = await apiClient.get(
+        "/analytics/totalimpressions",
         {},
         { withCredentials: true }
       );

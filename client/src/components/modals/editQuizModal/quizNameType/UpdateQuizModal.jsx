@@ -6,6 +6,7 @@ import PollDetails from "../quizDetails/PollDetails";
 import axios from "axios";
 import { useAuth } from "../../../../context/AuthContext";
 import Loader from "./../../../loader/Loader";
+import apiClient from "../../../../utils/apiClient";
 
 const UpdateQuizModal = ({ show, setShow, quizId }) => {
   const [selectedType, setSelectedType] = useState(null);
@@ -17,7 +18,7 @@ const UpdateQuizModal = ({ show, setShow, quizId }) => {
     async function fetchQuiz() {
       try {
         setLoading(true);
-        const response = await axios.get(`/api/quiz/view/${quizId}`);
+        const response = await apiClient.get(`/quiz/view/${quizId}`);
         const quizData = response.data.data;
         setQuizInfo({
           quizName: quizData.quizName,

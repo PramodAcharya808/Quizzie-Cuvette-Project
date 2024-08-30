@@ -6,6 +6,7 @@ import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
 import toastr from "toastr";
 import { useAuth } from "../../../../context/AuthContext";
 import Loader from "./../../../loader/Loader";
+import apiClient from "./../../../../utils/apiClient";
 
 const PollDetails = ({
   setShow,
@@ -35,7 +36,7 @@ const PollDetails = ({
     async function fetchQuizData() {
       try {
         setLoadingState(true);
-        const response = await axios.get(`/api/quiz/view/${quizId}`);
+        const response = await apiClient.get(`/quiz/view/${quizId}`);
         const quizData = response.data.data;
         setLoadingState(false);
 
@@ -141,8 +142,8 @@ const PollDetails = ({
 
     try {
       setLoadingState(true);
-      const response = await axios.patch(
-        `/api/quiz/update/${quizId}`,
+      const response = await apiClient.patch(
+        `/quiz/update/${quizId}`,
         updatedQuizData
       );
       setQuizLink(response.data.data.quizLink);

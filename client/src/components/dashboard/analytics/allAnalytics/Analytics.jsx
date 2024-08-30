@@ -10,6 +10,7 @@ import toastr from "toastr";
 import { useAuth } from "../../../../context/AuthContext";
 // import "toastr/build/toastr.min.css";
 import Loader from "./../../../loader/Loader";
+import apiClient from "../../../../utils/apiClient";
 
 function Analytics() {
   const [allQuizList, setAllQuizList] = useState([]);
@@ -30,8 +31,8 @@ function Analytics() {
   const handleConfirmDelete = async () => {
     setLoadingState(true);
     try {
-      await axios.delete(`/api/quiz/delete/${selectedQuizId}`);
-      const updatedQuizzes = await axios.get("/api/quiz/getAllQuiz");
+      await apiClient.delete(`/quiz/delete/${selectedQuizId}`);
+      const updatedQuizzes = await apiClient.get("/quiz/getAllQuiz");
       setAllQuizList(updatedQuizzes.data.data);
       setLoadingState(false);
       setShowModal(false);
@@ -74,9 +75,20 @@ function Analytics() {
   useEffect(() => {
     async function fetchAllQuiz() {
       setLoadingState(true);
-      const response = await axios.get("/api/quiz/getAllQuiz");
-      setAllQuizList(response.data.data);
-      setLoadingState(false);
+      try {
+        const token = localStorage.getItem("token"); // Retrieve the token from localStorage
+        const response = await apiClient.get("/quiz/getAllQuiz");
+        if (Array.isArray(response.data.data)) {
+          setAllQuizList(response.data.data);
+        } else {
+          setAllQuizList([]);
+        }
+        setLoadingState(false);
+      } catch (error) {
+        console.log("Failed to fetch quizzes", error);
+        toastr.error("Failed to fetch quizzes");
+        setLoadingState(false);
+      }
     }
     fetchAllQuiz();
   }, []);

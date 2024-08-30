@@ -7,6 +7,7 @@ import { format, parseISO } from "date-fns";
 import QuestionCard from "./questionCard/QuestionCard";
 import { useAuth } from "../../../../context/AuthContext";
 import Loader from "./../../../loader/Loader";
+import apiClient from "./../../../../utils/apiClient";
 
 const QuestionAnalytics = () => {
   const { loading, setLoadingState } = useAuth();
@@ -29,8 +30,8 @@ const QuestionAnalytics = () => {
     async function getQuestion() {
       try {
         setLoadingState(true);
-        const response = await axios.get(
-          `/api/analytics/getquestionwiseanalytics/${quizId}`
+        const response = await apiClient.get(
+          `/analytics/getquestionwiseanalytics/${quizId}`
         );
         if (response.status === 200 && response.data.data) {
           setQuizDetails(response.data.data);

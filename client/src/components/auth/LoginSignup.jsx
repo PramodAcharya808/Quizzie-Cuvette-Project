@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
 import Loader from "../loader/Loader";
 import toastr from "toastr";
+import { useNavigate } from "react-router-dom"; // Make sure to import useNavigate
 
 const LoginSignup = () => {
   const [isActive, setActive] = useState("signup");
@@ -23,15 +24,19 @@ const LoginSignup = () => {
 
   const confirmPassword = watch("password");
   const { login, setLoadingState, loading } = useAuth();
+  const navigate = useNavigate(); // Use useNavigate to navigate after login
 
   const onSignup = async (data) => {
     try {
-      const response = await axios.post("/api/user/signup", {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-      });
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/user/signup",
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+        }
+      );
       console.log(response.data);
 
       if (response.status === 201) {
@@ -49,28 +54,20 @@ const LoginSignup = () => {
     try {
       setLoadingState(true);
       const response = await axios.post(
-        "/api/user/login",
+        "http://localhost:8000/api/v1/user/login",
         {
-          // const response = await axios.post("/api/user/login", {
           email: data.email,
           password: data.password,
-        },
-        {},
-        { withCredentials: true }
+        }
       );
       console.log(response.data.data.accessToken);
-      console.log(response);
 
       setLoadingState(false);
 
-      if (response.data.status === 200) {
+      if (response.status === 200) {
         toastr.success("Login successful!");
-        console.log(response.data.data);
-
-        login(response.data.data);
-        console.log(response.data.data.loginUserObject.refreshToken);
-
-        navigate("/dashboard");
+        login(response.data.data); // Pass the entire data object to the login function
+        navigate("/dashboard"); // Redirect to the dashboard after successful login
       } else if (response.data.data.status > 400) {
         if (response.data.data.status == 404) {
           toastr.error(response.data.data.message);
@@ -80,9 +77,10 @@ const LoginSignup = () => {
         }
       }
     } catch (error) {
-      // console.error(
-      //   "Login failed: " + error.response?.data?.message || error.message
-      // );
+      console.error(
+        "Login failed:",
+        error.response?.data?.message || error.message
+      );
     }
   };
 

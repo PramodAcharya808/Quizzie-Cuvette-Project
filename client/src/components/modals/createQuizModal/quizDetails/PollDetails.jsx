@@ -7,6 +7,7 @@ import "./PollDetails.css";
 import { useAuth } from "../../../../context/AuthContext";
 import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
 import Loader from "./../../../loader/Loader";
+import apiClient from "./../../../../utils/apiClient";
 
 const PollDetails = ({
   setShow,
@@ -174,7 +175,7 @@ const PollDetails = ({
 
     try {
       setLoadingState(true);
-      const response = await axios.post("/api/quiz/create", quizData);
+      const response = await apiClient.post("/quiz/create", quizData);
       console.log(response);
       setQuizLink(response.data.data.quizLink);
       setLoadingState(false);

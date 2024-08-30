@@ -7,6 +7,7 @@ import PollCard from "./pollCard/PollCard";
 import "./PollWiseAnalytics.css";
 import { useAuth } from "../../../../context/AuthContext";
 import Loader from "./../../../loader/Loader";
+import apiClient from "./../../../../utils/apiClient";
 
 const PollWiseAnalytics = () => {
   const { loading, setLoadingState } = useAuth();
@@ -43,8 +44,8 @@ const PollWiseAnalytics = () => {
   useEffect(() => {
     async function getPoll() {
       setLoadingState(true);
-      const response = await axios.get(
-        `/api/analytics/getpollanalytics/${quizId}`
+      const response = await apiClient.get(
+        `/analytics/getpollanalytics/${quizId}`
       );
       if (response.data.data) {
         setQuizDetails(response.data.data);

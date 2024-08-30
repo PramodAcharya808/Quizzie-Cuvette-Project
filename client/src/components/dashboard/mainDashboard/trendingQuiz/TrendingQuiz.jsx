@@ -5,6 +5,7 @@ import { Eye } from "../../../Icons/CustomIcons";
 import QuizCard from "./QuizCard/QuizCard";
 import Loader from "./../../../loader/Loader";
 import { useAuth } from "../../../../context/AuthContext";
+import apiClient from "./../../../../utils/apiClient";
 
 const TrendingQuiz = () => {
   const [trendingQuiz, setTrendingQuiz] = useState([]);
@@ -13,7 +14,7 @@ const TrendingQuiz = () => {
     async function fecthTrending() {
       setLoadingState(true);
       try {
-        const trendingQuizList = await axios.get("/api/analytics/trendingquiz");
+        const trendingQuizList = await apiClient.get("/analytics/trendingquiz");
         setTrendingQuiz(trendingQuizList.data);
       } catch (error) {
         console.error("Error fetching trending quizzes:", error);

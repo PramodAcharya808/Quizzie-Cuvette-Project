@@ -1,12 +1,11 @@
-// RequireAuth.jsx
 import React from "react";
 import { useAuth } from "./AuthContext";
 import { Navigate } from "react-router-dom";
 
 export default function RequireAuth({ children }) {
-  const { user } = useAuth();
+  const { loggedIn } = useAuth();
 
-  if (!user || !user.isAuthenticated) {
+  if (!loggedIn) {
     return <Navigate to="/" />;
   }
 

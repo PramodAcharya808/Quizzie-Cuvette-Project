@@ -6,6 +6,7 @@ import CopyLinkModal from "../copyLinkModal/CopyLinkModal";
 import toastr from "toastr";
 import { useAuth } from "../../../../context/AuthContext";
 import Loader from "./../../../loader/Loader";
+import apiClient from "../../../../utils/apiClient";
 
 const QuizDetails = ({
   setShow,
@@ -189,7 +190,7 @@ const QuizDetails = ({
 
     try {
       setLoadingState(true);
-      const response = await axios.post("/api/quiz/create", quizData);
+      const response = await apiClient.post("/quiz/create", quizData);
       setQuizLink(response.data.data.quizLink);
       setLoadingState(false);
       toastr.success("Quiz created successfully!");
