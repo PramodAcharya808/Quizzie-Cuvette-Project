@@ -29,7 +29,7 @@ const LoginSignup = () => {
   const onSignup = async (data) => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/user/signup",
+        "https://quizzie-cuvette-backend.onrender.com/api/v1/user/signup",
         {
           name: data.name,
           email: data.email,
@@ -54,7 +54,7 @@ const LoginSignup = () => {
     try {
       setLoadingState(true);
       const response = await axios.post(
-        "http://localhost:8000/api/v1/user/login",
+        "https://quizzie-cuvette-backend.onrender.com/api/v1/user/login",
         {
           email: data.email,
           password: data.password,

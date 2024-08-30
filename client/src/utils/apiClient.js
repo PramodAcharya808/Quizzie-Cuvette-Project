@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "/api", // Set your base API URL here
+  baseURL: "https://quizzie-cuvette-backend.onrender.com/api/v1", // Set your base API URL here
 });
 
 apiClient.interceptors.request.use(

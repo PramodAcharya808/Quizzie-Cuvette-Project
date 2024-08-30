@@ -20,11 +20,15 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post("http://localhost:8000/api/v1/user/logout", null, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await axios.post(
+        "https://quizzie-cuvette-backend.onrender.com/api/v1/user/logout",
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       localStorage.removeItem("token"); // Remove the token from localStorage
       setLoggedIn(false);
     } catch (error) {
