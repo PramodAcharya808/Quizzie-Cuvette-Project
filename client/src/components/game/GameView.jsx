@@ -29,7 +29,9 @@ const GameView = () => {
   // Function to increase quiz impression
   const increaseImpression = useCallback(async (quizId) => {
     try {
-      await axios.post(`/api/analytics/increaseimpression/${quizId}`);
+      await axios.post(
+        `https://quizcraft-gl9v.onrender.com/api/v1/analytics/increaseimpression/${quizId}`
+      );
     } catch (error) {
       console.error("Failed to increase quiz impression", error);
     }
@@ -38,7 +40,9 @@ const GameView = () => {
   useEffect(() => {
     async function getQuiz() {
       try {
-        const response = await axios.get(`/api/public/quiz/${quizLink}`);
+        const response = await axios.get(
+          `https://quizcraft-gl9v.onrender.com/api/v1/public/quiz/${quizLink}`
+        );
         setQuizData(response.data.data);
 
         // Increase impression once when the quiz data is successfully fetched
@@ -75,7 +79,10 @@ const GameView = () => {
       };
 
       try {
-        await axios.post("/api/public/quiz/start/", answerData);
+        await axios.post(
+          "https://quizcraft-gl9v.onrender.com/api/v1/public/quiz/start/",
+          answerData
+        );
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setSelectedOption(null);
       } catch (error) {
@@ -94,7 +101,10 @@ const GameView = () => {
     };
 
     try {
-      const response = await axios.post("/api/public/quiz/start/", answerData);
+      const response = await axios.post(
+        "https://quizcraft-gl9v.onrender.com/api/v1/public/quiz/start/",
+        answerData
+      );
       const { totalCorrect, totalQuestions } = response.data.data;
       setQuizCompleted(true);
       setResults({ totalCorrect, totalQuestions }); // Store the results

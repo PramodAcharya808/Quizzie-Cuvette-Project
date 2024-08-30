@@ -30,8 +30,12 @@ function Analytics() {
   const handleConfirmDelete = async () => {
     setLoadingState(true);
     try {
-      await axios.delete(`/api/quiz/delete/${selectedQuizId}`);
-      const updatedQuizzes = await axios.get("/api/quiz/getAllQuiz");
+      await axios.delete(
+        `https://quizcraft-gl9v.onrender.com/api/v1/quiz/delete/${selectedQuizId}`
+      );
+      const updatedQuizzes = await axios.get(
+        "https://quizcraft-gl9v.onrender.com/api/v1/quiz/getAllQuiz"
+      );
       setAllQuizList(updatedQuizzes.data.data);
       setLoadingState(false);
       setShowModal(false);
@@ -74,7 +78,9 @@ function Analytics() {
   useEffect(() => {
     async function fetchAllQuiz() {
       setLoadingState(true);
-      const response = await axios.get("/api/quiz/getAllQuiz");
+      const response = await axios.get(
+        "https://quizcraft-gl9v.onrender.com/api/v1/quiz/getAllQuiz"
+      );
       setAllQuizList(response.data.data);
       setLoadingState(false);
     }
