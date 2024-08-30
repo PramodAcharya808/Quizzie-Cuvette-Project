@@ -44,7 +44,7 @@ const PollWiseAnalytics = () => {
     async function getPoll() {
       setLoadingState(true);
       const response = await axios.get(
-        `https://quizcraft-gl9v.onrender.com/api/v1/analytics/getpollanalytics/${quizId}`
+        `/api/analytics/getpollanalytics/${quizId}`
       );
       if (response.data.data) {
         setQuizDetails(response.data.data);

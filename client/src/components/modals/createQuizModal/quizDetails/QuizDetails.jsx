@@ -189,10 +189,7 @@ const QuizDetails = ({
 
     try {
       setLoadingState(true);
-      const response = await axios.post(
-        "https://quizcraft-gl9v.onrender.com/api/v1/quiz/create",
-        quizData
-      );
+      const response = await axios.post("/api/quiz/create", quizData);
       setQuizLink(response.data.data.quizLink);
       setLoadingState(false);
       toastr.success("Quiz created successfully!");
