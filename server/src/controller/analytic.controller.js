@@ -101,19 +101,23 @@ const totalQuestions = async (req, res) => {
 const trendingQuiz = async (req, res) => {
   try {
     const userId = req.user._id;
-    const result = await Quiz.find({ creatorId: userId }).sort({
-      impressions: -1,
-    });
+
+    // Filter quizzes with 10 or more impressions and created by the current user
+    const result = await Quiz.find({
+      creatorId: userId,
+      impressions: { $gte: 10 },
+    }).sort({ impressions: -1 });
 
     if (result.length === 0) {
       return res.json(new ApiResponse(200, "No trending quiz found", result));
     }
+
     return res.json(new ApiResponse(200, "Trending quiz", result));
   } catch (error) {
     return res.json(
       new ApiError(
         500,
-        "Something went wrong while fetching trending questions",
+        "Something went wrong while fetching trending quizzes",
         error
       )
     );

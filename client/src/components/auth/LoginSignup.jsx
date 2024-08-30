@@ -28,8 +28,10 @@ const LoginSignup = () => {
 
   const onSignup = async (data) => {
     try {
+      setLoadingState(true);
       const response = await axios.post(
         "https://quizzie-cuvette-backend.onrender.com/api/v1/user/signup",
+        // "http://localhost:8000/api/v1/user/signup",
         {
           name: data.name,
           email: data.email,
@@ -38,7 +40,7 @@ const LoginSignup = () => {
         }
       );
       console.log(response.data);
-
+      setLoadingState(false);
       if (response.status === 201) {
         toastr.success("Account created!");
       } else if (response.data.statusCode === 500) {
@@ -55,6 +57,7 @@ const LoginSignup = () => {
       setLoadingState(true);
       const response = await axios.post(
         "https://quizzie-cuvette-backend.onrender.com/api/v1/user/login",
+        // "http://localhost:8000/api/v1/user/login",
         {
           email: data.email,
           password: data.password,
@@ -82,156 +85,161 @@ const LoginSignup = () => {
   };
 
   return (
-    <div className="container bg-primary">
-      <div className="inner-container bg-secondary box-shadow-2">
-        <h1 className="logo secondary-font">QUIZZIE</h1>
+    <>
+      {loading && <Loader />}
+      <div className="container bg-primary">
+        <div className="inner-container bg-secondary box-shadow-2">
+          <h1 className="logo secondary-font">QUIZZIE</h1>
 
-        <div className="selector">
-          <button
-            className={`tab ${
-              isActive === `signup` ? `box-shadow-1` : ``
-            } text-primary`}
-            onClick={() => {
-              handleToggle(`signup`);
-            }}
-          >
-            Sign Up
-          </button>
-          <button
-            className={`tab ${
-              isActive === `login` ? `box-shadow-1` : ``
-            } text-primary`}
-            onClick={() => {
-              handleToggle(`login`);
-            }}
-          >
-            Log In
-          </button>
+          <div className="selector">
+            <button
+              className={`tab ${
+                isActive === `signup` ? `box-shadow-1` : ``
+              } text-primary`}
+              onClick={() => {
+                handleToggle(`signup`);
+              }}
+            >
+              Sign Up
+            </button>
+            <button
+              className={`tab ${
+                isActive === `login` ? `box-shadow-1` : ``
+              } text-primary`}
+              onClick={() => {
+                handleToggle(`login`);
+              }}
+            >
+              Log In
+            </button>
+          </div>
+
+          {isActive === "signup" && (
+            <>
+              <form onSubmit={handleSubmit(onSignup)} className="signup-form">
+                <div className="input-group">
+                  <div className="input-field">
+                    <label className="form-label">Name</label>
+                    <input
+                      type="text"
+                      style={{ borderColor: errors.name ? "red" : "" }}
+                      {...register("name", { required: "Invalid Name" })}
+                    />
+                  </div>
+                  <div className={`error ${errors.name ? "show" : ""}`}>
+                    {errors.name && errors.name.message}
+                  </div>
+                </div>
+
+                <div className="input-group">
+                  <div className="input-field">
+                    <label className="form-label">Email</label>
+                    <input
+                      type="email"
+                      style={{ borderColor: errors.email ? "red" : "" }}
+                      {...register("email", { required: "Invalid Email" })}
+                    />
+                  </div>
+                  <div className={`error ${errors.email ? "show" : ""}`}>
+                    {errors.email && errors.email.message}
+                  </div>
+                </div>
+
+                <div className="input-group">
+                  <div className="input-field">
+                    <label className="form-label">Password</label>
+                    <input
+                      type="password"
+                      style={{ borderColor: errors.password ? "red" : "" }}
+                      {...register("password", {
+                        required: "Password must be 6 to 24 characters",
+                        minLength: {
+                          value: 6,
+                          message: "Must be at least 6 characters",
+                        },
+                        maxLength: {
+                          value: 24,
+                          message: "Cannot exceed 24 characters",
+                        },
+                      })}
+                    />
+                  </div>
+                  <div className={`error ${errors.password ? "show" : ""}`}>
+                    {errors.password && errors.password.message}
+                  </div>
+                </div>
+
+                <div className="input-group">
+                  <div className="input-field">
+                    <label className="form-label">Confirm Password</label>
+                    <input
+                      type="password"
+                      style={{
+                        borderColor: errors.confirmPassword ? "red" : "",
+                      }}
+                      {...register("confirmPassword", {
+                        validate: (value) =>
+                          value === confirmPassword || "Passwords don't match",
+                      })}
+                    />
+                  </div>
+                  <div
+                    className={`error ${errors.confirmPassword ? "show" : ""}`}
+                  >
+                    {errors.confirmPassword && errors.confirmPassword.message}
+                  </div>
+                </div>
+
+                <button type="submit" className="submit-btn">
+                  Sign-Up
+                </button>
+              </form>
+            </>
+          )}
+
+          {isActive === "login" && (
+            <>
+              {loading && <Loader />}
+              <form onSubmit={handleSubmit(onLogin)} className="signup-form">
+                <div className="input-group">
+                  <div className="input-field">
+                    <label className="form-label">Email</label>
+                    <input
+                      type="email"
+                      style={{ borderColor: errors.email ? "red" : "" }}
+                      {...register("email", { required: "Please enter email" })}
+                    />
+                  </div>
+                  <div className={`error ${errors.email ? "show" : ""}`}>
+                    {errors.email && errors.email.message}
+                  </div>
+                </div>
+
+                <div className="input-group">
+                  <div className="input-field">
+                    <label className="form-label">Password</label>
+                    <input
+                      type="password"
+                      style={{ borderColor: errors.password ? "red" : "" }}
+                      {...register("password", {
+                        required: "Please enter password",
+                      })}
+                    />
+                  </div>
+                  <div className={`error ${errors.password ? "show" : ""}`}>
+                    {errors.password && errors.password.message}
+                  </div>
+                </div>
+
+                <button type="submit" className="submit-btn">
+                  Log In
+                </button>
+              </form>
+            </>
+          )}
         </div>
-
-        {isActive === "signup" && (
-          <>
-            <form onSubmit={handleSubmit(onSignup)} className="signup-form">
-              <div className="input-group">
-                <div className="input-field">
-                  <label className="form-label">Name</label>
-                  <input
-                    type="text"
-                    style={{ borderColor: errors.name ? "red" : "" }}
-                    {...register("name", { required: "Invalid Name" })}
-                  />
-                </div>
-                <div className={`error ${errors.name ? "show" : ""}`}>
-                  {errors.name && errors.name.message}
-                </div>
-              </div>
-
-              <div className="input-group">
-                <div className="input-field">
-                  <label className="form-label">Email</label>
-                  <input
-                    type="email"
-                    style={{ borderColor: errors.email ? "red" : "" }}
-                    {...register("email", { required: "Invalid Email" })}
-                  />
-                </div>
-                <div className={`error ${errors.email ? "show" : ""}`}>
-                  {errors.email && errors.email.message}
-                </div>
-              </div>
-
-              <div className="input-group">
-                <div className="input-field">
-                  <label className="form-label">Password</label>
-                  <input
-                    type="password"
-                    style={{ borderColor: errors.password ? "red" : "" }}
-                    {...register("password", {
-                      required: "Password must be 6 to 24 characters",
-                      minLength: {
-                        value: 6,
-                        message: "Must be at least 6 characters",
-                      },
-                      maxLength: {
-                        value: 24,
-                        message: "Cannot exceed 24 characters",
-                      },
-                    })}
-                  />
-                </div>
-                <div className={`error ${errors.password ? "show" : ""}`}>
-                  {errors.password && errors.password.message}
-                </div>
-              </div>
-
-              <div className="input-group">
-                <div className="input-field">
-                  <label className="form-label">Confirm Password</label>
-                  <input
-                    type="password"
-                    style={{ borderColor: errors.confirmPassword ? "red" : "" }}
-                    {...register("confirmPassword", {
-                      validate: (value) =>
-                        value === confirmPassword || "Passwords don't match",
-                    })}
-                  />
-                </div>
-                <div
-                  className={`error ${errors.confirmPassword ? "show" : ""}`}
-                >
-                  {errors.confirmPassword && errors.confirmPassword.message}
-                </div>
-              </div>
-
-              <button type="submit" className="submit-btn">
-                Sign-Up
-              </button>
-            </form>
-          </>
-        )}
-
-        {isActive === "login" && (
-          <>
-            {loading && <Loader />}
-            <form onSubmit={handleSubmit(onLogin)} className="signup-form">
-              <div className="input-group">
-                <div className="input-field">
-                  <label className="form-label">Email</label>
-                  <input
-                    type="email"
-                    style={{ borderColor: errors.email ? "red" : "" }}
-                    {...register("email", { required: "Please enter email" })}
-                  />
-                </div>
-                <div className={`error ${errors.email ? "show" : ""}`}>
-                  {errors.email && errors.email.message}
-                </div>
-              </div>
-
-              <div className="input-group">
-                <div className="input-field">
-                  <label className="form-label">Password</label>
-                  <input
-                    type="password"
-                    style={{ borderColor: errors.password ? "red" : "" }}
-                    {...register("password", {
-                      required: "Please enter password",
-                    })}
-                  />
-                </div>
-                <div className={`error ${errors.password ? "show" : ""}`}>
-                  {errors.password && errors.password.message}
-                </div>
-              </div>
-
-              <button type="submit" className="submit-btn">
-                Log In
-              </button>
-            </form>
-          </>
-        )}
       </div>
-    </div>
+    </>
   );
 };
 

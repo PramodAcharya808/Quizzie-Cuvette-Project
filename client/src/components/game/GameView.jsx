@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Loader from "./../loader/Loader";
 import apiClient from "./../../utils/apiClient";
+import { useAuth } from "../../context/AuthContext";
 
 const GameView = () => {
   const { quizLink } = useParams();
@@ -20,6 +21,7 @@ const GameView = () => {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [results, setResults] = useState(null);
+  const { setLoadingState, loading } = useAuth();
 
   // Retrieve sessionId from local storage or create a new one
   const sessionId = localStorage.getItem("sessionId") || uuidv4();
@@ -76,8 +78,10 @@ const GameView = () => {
       };
 
       try {
+        setLoadingState(true);
         await apiClient.post("/public/quiz/start/", answerData);
         setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setLoadingState(false);
         setSelectedOption(null);
       } catch (error) {
         console.error(error);
@@ -95,8 +99,10 @@ const GameView = () => {
     };
 
     try {
+      setLoadingState(true);
       const response = await apiClient.post("/public/quiz/start/", answerData);
       const { totalCorrect, totalQuestions } = response.data.data;
+      setLoadingState(false);
       setQuizCompleted(true);
       setResults({ totalCorrect, totalQuestions }); // Store the results
       setQuizCompleted(true);
@@ -135,44 +141,47 @@ const GameView = () => {
   const currentQuestionNumber = currentQuestionIndex + 1;
 
   return (
-    <div className="game-view-container">
-      {question.optionType === "Text" && (
-        <TextOverlay
-          questionText={question.questionText}
-          options={question.options}
-          onOptionClick={handleOptionClick}
-          timer={question.timer}
-          currentQuestionNumber={currentQuestionNumber}
-          totalQuestions={totalQuestions}
-          onNext={handleNext}
-          onSubmit={handleSubmit}
-        />
-      )}
-      {question.optionType === "Text and Image URL" && (
-        <TextUrlOverlay
-          questionText={question.questionText}
-          options={question.options}
-          onOptionClick={handleOptionClick}
-          timer={question.timer}
-          currentQuestionNumber={currentQuestionNumber}
-          totalQuestions={totalQuestions}
-          onNext={handleNext}
-          onSubmit={handleSubmit}
-        />
-      )}
-      {question.optionType === "Image URL" && (
-        <UrlOverlay
-          questionText={question.questionText}
-          options={question.options}
-          onOptionClick={handleOptionClick}
-          timer={question.timer}
-          currentQuestionNumber={currentQuestionNumber}
-          totalQuestions={totalQuestions}
-          onNext={handleNext}
-          onSubmit={handleSubmit}
-        />
-      )}
-    </div>
+    <>
+      {loading && <Loader />}
+      <div className="game-view-container">
+        {question.optionType === "Text" && (
+          <TextOverlay
+            questionText={question.questionText}
+            options={question.options}
+            onOptionClick={handleOptionClick}
+            timer={question.timer}
+            currentQuestionNumber={currentQuestionNumber}
+            totalQuestions={totalQuestions}
+            onNext={handleNext}
+            onSubmit={handleSubmit}
+          />
+        )}
+        {question.optionType === "Text and Image URL" && (
+          <TextUrlOverlay
+            questionText={question.questionText}
+            options={question.options}
+            onOptionClick={handleOptionClick}
+            timer={question.timer}
+            currentQuestionNumber={currentQuestionNumber}
+            totalQuestions={totalQuestions}
+            onNext={handleNext}
+            onSubmit={handleSubmit}
+          />
+        )}
+        {question.optionType === "Image URL" && (
+          <UrlOverlay
+            questionText={question.questionText}
+            options={question.options}
+            onOptionClick={handleOptionClick}
+            timer={question.timer}
+            currentQuestionNumber={currentQuestionNumber}
+            totalQuestions={totalQuestions}
+            onNext={handleNext}
+            onSubmit={handleSubmit}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
