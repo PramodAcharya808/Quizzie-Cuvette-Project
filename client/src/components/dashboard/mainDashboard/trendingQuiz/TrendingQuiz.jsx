@@ -13,9 +13,7 @@ const TrendingQuiz = () => {
     async function fecthTrending() {
       setLoadingState(true);
       try {
-        const trendingQuizList = await axios.get(
-          "https://quizcraft-gl9v.onrender.com/api/v1/analytics/trendingquiz"
-        );
+        const trendingQuizList = await axios.get("/api/analytics/trendingquiz");
         setTrendingQuiz(trendingQuizList.data);
       } catch (error) {
         console.error("Error fetching trending quizzes:", error);

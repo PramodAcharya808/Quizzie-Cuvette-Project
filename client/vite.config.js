@@ -1,8 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-const backendUrl = "https://quizcraft-gl9v.onrender.com";
-// const backendUrl = "http://localhost:8000";
+// const backendUrl = "https://quizcraft-gl9v.onrender.com";
+const backendUrl = "http://localhost:8000";
 
 export default defineConfig({
   plugins: [react()],

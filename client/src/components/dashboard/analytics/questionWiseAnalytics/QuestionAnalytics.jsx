@@ -30,7 +30,7 @@ const QuestionAnalytics = () => {
       try {
         setLoadingState(true);
         const response = await axios.get(
-          `https://quizcraft-gl9v.onrender.com/api/v1/analytics/getquestionwiseanalytics/${quizId}`
+          `/api/analytics/getquestionwiseanalytics/${quizId}`
         );
         if (response.status === 200 && response.data.data) {
           setQuizDetails(response.data.data);

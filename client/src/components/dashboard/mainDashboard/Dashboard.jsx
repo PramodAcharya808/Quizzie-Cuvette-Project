@@ -33,17 +33,17 @@ const Dashboard = () => {
     async function getData() {
       setLoadingState(true);
       const totalquiz = await axios.get(
-        "https://quizcraft-gl9v.onrender.com/api/v1/analytics/totalQuiz",
+        "/api/analytics/totalQuiz",
         {},
         { withCredentials: true }
       );
       const totalquestions = await axios.get(
-        "https://quizcraft-gl9v.onrender.com/api/v1/analytics/totalquestions",
+        "/api/analytics/totalquestions",
         {},
         { withCredentials: true }
       );
       const totalimpressions = await axios.get(
-        "https://quizcraft-gl9v.onrender.com/api/v1/analytics/totalimpressions",
+        "/api/analytics/totalimpressions",
         {},
         { withCredentials: true }
       );
