@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import apiClient from "../utils/apiClient";
 
 const AuthContext = createContext(null);
 
@@ -20,14 +21,15 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post(
-        "https://quizzie-cuvette-backend.onrender.com/api/v1/user/logout",
+      await apiClient.post(
+        "/user/logout",
         null,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
+        { withCredentials: true }
       );
       localStorage.removeItem("token"); // Remove the token from localStorage
       setLoggedIn(false);
