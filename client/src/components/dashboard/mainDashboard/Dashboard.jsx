@@ -56,7 +56,7 @@ const Dashboard = () => {
       setLoadingState(false);
     }
     getData();
-  }, []);
+  }, [loading]);
 
   return (
     <>
