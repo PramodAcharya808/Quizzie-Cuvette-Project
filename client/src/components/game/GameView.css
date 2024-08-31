@@ -264,3 +264,14 @@
   font-size: 7.4rem;
   font-weight: 700;
 }
+
+.quiz-not-found-message {
+  text-align: center;
+  font-size: 4rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.quiz-not-found-message .oops {
+  font-size: 6rem;
+}

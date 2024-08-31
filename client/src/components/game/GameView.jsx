@@ -22,6 +22,7 @@ const GameView = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [results, setResults] = useState(null);
   const { setLoadingState, loading } = useAuth();
+  const [quizFound, setQuizFound] = useState(true);
 
   // Retrieve sessionId from local storage or create a new one
   const sessionId = localStorage.getItem("sessionId") || uuidv4();
@@ -42,6 +43,10 @@ const GameView = () => {
     async function getQuiz() {
       try {
         const response = await apiClient.get(`/public/quiz/${quizLink}`);
+        if (response.data.data.status === 404) {
+          setQuizFound(false);
+        }
+
         setQuizData(response.data.data);
 
         // Increase impression once when the quiz data is successfully fetched
@@ -67,13 +72,13 @@ const GameView = () => {
   const handleNext = useCallback(async () => {
     if (currentQuestionIndex + 1 === quizData.questions.length) {
       setIsSubmitting(true);
-      await handleSubmit(); 
+      await handleSubmit();
     } else {
       const question = quizData.questions[currentQuestionIndex];
       const answerData = {
         quizId: quizData._id,
         questionId: question._id,
-        selectedOptionId: selectedOption || null, 
+        selectedOptionId: selectedOption || null,
         sessionId,
       };
 
@@ -94,7 +99,7 @@ const GameView = () => {
     const answerData = {
       quizId: quizData._id,
       questionId: question._id,
-      selectedOptionId: selectedOption || null, 
+      selectedOptionId: selectedOption || null,
       sessionId,
     };
 
@@ -106,11 +111,11 @@ const GameView = () => {
       setQuizCompleted(true);
       setResults({ totalCorrect, totalQuestions });
       setQuizCompleted(true);
-      localStorage.removeItem("sessionId"); 
+      localStorage.removeItem("sessionId");
     } catch (error) {
       console.error(error);
     } finally {
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   }, [currentQuestionIndex, quizData, selectedOption, sessionId]);
 
@@ -132,6 +137,17 @@ const GameView = () => {
 
   if (isSubmitting) {
     return <Loader />;
+  }
+
+  if (!quizFound) {
+    return (
+      <div className="game-view-container">
+        <div className="quiz-not-found-message">
+          <div className="oops">Oops!</div>
+          The quiz you are trying to access does not exist.
+        </div>
+      </div>
+    );
   }
 
   if (!quizData) return <Loader />;
