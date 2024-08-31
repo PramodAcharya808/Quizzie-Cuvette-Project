@@ -28,8 +28,8 @@ export const AuthProvider = ({ children }) => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        },
-        { withCredentials: true }
+        }
+        // { withCredentials: true }
       );
       localStorage.removeItem("token"); // Remove the token from localStorage
       setLoggedIn(false);
