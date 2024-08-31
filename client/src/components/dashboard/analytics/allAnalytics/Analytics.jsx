@@ -41,6 +41,7 @@ function Analytics() {
       console.log(error);
     }
     setShowUpdateModal(false);
+    window.location.reload();
   };
 
   const handleShare = (quizLink) => {

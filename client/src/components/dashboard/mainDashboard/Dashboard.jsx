@@ -58,31 +58,31 @@ const Dashboard = () => {
     getData();
   }, []);
 
-  const handleDashboardClick = async () => {
-    setLoadingState(true);
-    const totalquiz = await apiClient.get(
-      "/analytics/totalQuiz",
-      {},
-      { withCredentials: true }
-    );
-    const totalquestions = await apiClient.get(
-      "/analytics/totalquestions",
-      {},
-      { withCredentials: true }
-    );
-    const totalimpressions = await apiClient.get(
-      "/analytics/totalimpressions",
-      {},
-      { withCredentials: true }
-    );
-    const quiz = formatNumber(totalquiz.data.data);
-    const questions = formatNumber(totalquestions.data.data);
-    const impressions = formatNumber(totalimpressions.data.data);
-    setTotalquiz(quiz);
-    setTotalquestions(questions);
-    setTotalimpressions(impressions);
-    setLoadingState(false);
-  };
+  // const handleDashboardClick = async () => {
+  //   setLoadingState(true);
+  //   const totalquiz = await apiClient.get(
+  //     "/analytics/totalQuiz",
+  //     {},
+  //     { withCredentials: true }
+  //   );
+  //   const totalquestions = await apiClient.get(
+  //     "/analytics/totalquestions",
+  //     {},
+  //     { withCredentials: true }
+  //   );
+  //   const totalimpressions = await apiClient.get(
+  //     "/analytics/totalimpressions",
+  //     {},
+  //     { withCredentials: true }
+  //   );
+  //   const quiz = formatNumber(totalquiz.data.data);
+  //   const questions = formatNumber(totalquestions.data.data);
+  //   const impressions = formatNumber(totalimpressions.data.data);
+  //   setTotalquiz(quiz);
+  //   setTotalquestions(questions);
+  //   setTotalimpressions(impressions);
+  //   setLoadingState(false);
+  // };
 
   return (
     <>
@@ -95,9 +95,7 @@ const Dashboard = () => {
 
           <div className="inner-group-2">
             <Link to="/dashboard">
-              <div className="options" onClick={handleDashboardClick}>
-                Dashboard
-              </div>
+              <div className="options">Dashboard</div>
             </Link>
 
             <Link to="analytics">
