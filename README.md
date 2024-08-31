@@ -2,8 +2,10 @@
 
 ##### Developer: `PRAMOD ACHARYA`
 
-#### FRONTEND: https://pramodquizcraft.vercel.app/
+##### Contact: `pramodthyagaraj@gmail.com`
 
-#### BACKEND REST_APIs: https://quizcraft-gl9v.onrender.com
+#### FRONTEND: https://quizzie-cuvette-pramod.vercel.app/
+
+#### BACKEND REST_APIs: https://quizzie-cuvette-backend.onrender.com
 
 `[GET, POST, PATCH, DELETE]`
