@@ -80,7 +80,7 @@
     background: #F0F0F0;
     border-radius: 1.5rem;
     cursor: pointer;
-    height: 10rem;
+    height: 20rem;
     width: 80%;
   }
 
@@ -169,5 +169,12 @@
   .poll-result-container p {
     font-size: 3.4rem;
     font-weight: 700;
+  }
+
+  .quiz-not-found-message {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
