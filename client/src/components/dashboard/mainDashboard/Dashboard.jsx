@@ -59,6 +59,7 @@ const Dashboard = () => {
   }, []);
 
   const handleDashboardClick = async () => {
+    setLoadingState(true);
     const totalquiz = await apiClient.get(
       "/analytics/totalQuiz",
       {},
@@ -80,6 +81,7 @@ const Dashboard = () => {
     setTotalquiz(quiz);
     setTotalquestions(questions);
     setTotalimpressions(impressions);
+    setLoadingState(false);
   };
 
   return (
