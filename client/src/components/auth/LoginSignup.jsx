@@ -8,6 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 import Loader from "../loader/Loader";
 import toastr from "toastr";
 import { useNavigate } from "react-router-dom";
+import apiClient from "./../../utils/apiClient";
 
 const LoginSignup = () => {
   const [isActive, setActive] = useState("signup");
@@ -24,20 +25,21 @@ const LoginSignup = () => {
 
   const confirmPassword = watch("password");
   const { login, setLoadingState, loading } = useAuth();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const onSignup = async (data) => {
     try {
       setLoadingState(true);
-      const response = await axios.post(
-        "https://quizzie-cuvette-backend.onrender.com/api/v1/user/signup",
+      const response = await apiClient.post(
+        "/user/signup",
         // "http://localhost:8000/api/v1/user/signup",
         {
           name: data.name,
           email: data.email,
           password: data.password,
           confirmPassword: data.confirmPassword,
-        }
+        },
+        { withCredentials: false }
       );
       // console.log(response.data);
       setLoadingState(false);
@@ -55,13 +57,14 @@ const LoginSignup = () => {
   const onLogin = async (data) => {
     try {
       setLoadingState(true);
-      const response = await axios.post(
-        "https://quizzie-cuvette-backend.onrender.com/api/v1/user/login",
+      const response = await apiClient.post(
+        "/user/login",
         // "http://localhost:8000/api/v1/user/login",
         {
           email: data.email,
           password: data.password,
-        }
+        },
+        { withCredentials: false }
       );
 
       setLoadingState(false);
