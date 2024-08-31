@@ -14,15 +14,19 @@
 
 ### FRONTEND
 
-#### 1. Go to `client/src/utils/apiClient.js` folder.
+#### 1. Go to `client/` and open terminal to run `npm install`
 
-#### 2. Create `.env` file in `client/` location.
+#### 2. Go to `client/src/utils/apiClient.js` folder.
 
-#### 3. Change the `baseURL` to your backend server.
+#### 3. Create `.env` file in `client/` location.
 
-#### 4. Go to `client/` open terminal and start the application using `npm run dev`
+#### 4. Change the `baseURL` to your backend server.
+
+#### 5. Go to `client/` open terminal and start the application using `npm run dev`
 
 ### BACKEND
+
+#### 1. Go to `server/` and open terminal to run ` npm install`
 
 #### 1. Go to `server/`
 
