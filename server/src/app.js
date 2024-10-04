@@ -56,6 +56,7 @@ setInterval(() => {
   });
 }, 180000);
 
+
 // USER ROUTES
 app.use(`${apiVersion}/user`, userRouter);
 
