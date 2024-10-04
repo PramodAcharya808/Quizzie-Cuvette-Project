@@ -65,7 +65,6 @@ const userSignup = async (req, res) => {
 const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     if (
       [email, password].some((fields) => {
         return fields?.trim() === "";

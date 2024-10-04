@@ -18,7 +18,6 @@ app.use(
   })
 );
 
-
 app.use(cookieParser());
 
 app.use(express.json({ limit: "16kb" }));
@@ -49,6 +48,13 @@ if (process.env.ENVIRONMENT === "development") {
     });
   });
 }
+
+setInterval(() => {
+  app.get("/ping", (req, res) => {
+    console.log("Refreshing server connection !");
+    res.json({ message: "pong", success: true });
+  });
+}, 180000);
 
 // USER ROUTES
 app.use(`${apiVersion}/user`, userRouter);
